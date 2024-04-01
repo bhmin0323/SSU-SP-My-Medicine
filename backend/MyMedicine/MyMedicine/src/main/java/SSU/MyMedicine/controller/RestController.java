@@ -31,6 +31,9 @@ public class RestController {
 
     @PostMapping("/signup")
     public String signup(@RequestBody UserVO userVO) {
+        if (userService.existByName(userVO.getUsername()))
+            return "Username already exists.";
+
         if (!userVO.getAllergicList().isEmpty())
             allergicService.saveIfNotThere(userVO.getAllergicList());
 

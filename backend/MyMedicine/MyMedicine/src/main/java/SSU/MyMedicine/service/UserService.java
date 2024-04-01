@@ -60,6 +60,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public Boolean existByName(String name){
+        if(userRepository.existsByName(name))
+            return true;
+        return false;
+    }
+
     public User findByName(String username){
         return userRepository.findByName(username);
     }
