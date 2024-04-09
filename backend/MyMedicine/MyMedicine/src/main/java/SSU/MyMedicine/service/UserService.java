@@ -2,6 +2,7 @@ package SSU.MyMedicine.service;
 
 import SSU.MyMedicine.DAO.UserRepository;
 import SSU.MyMedicine.DTO.TodoDTO;
+import SSU.MyMedicine.VO.GetUserInfoVO;
 import SSU.MyMedicine.VO.UserVO;
 import SSU.MyMedicine.entity.User;
 import jakarta.persistence.EntityExistsException;
@@ -56,23 +57,32 @@ public class UserService {
 
         return userEntity;
     }
+
     public User save(User user) {
         return userRepository.save(user);
     }
 
-    public Boolean existByName(String name){
-        if(userRepository.existsByName(name))
+    public Boolean existByName(String name) {
+        if (userRepository.existsByName(name))
             return true;
         return false;
     }
 
-    public User findByName(String username){
+    public User findByName(String username) {
         return userRepository.findByName(username);
     }
 
-//    public void deleteById(long pid) {
-//        userRepository.deleteById(pid);
-//    }
+    public GetUserInfoVO findByUid(Integer uid) {
+        User findUser = userRepository.findByUid(uid);
+        if (findUser == null) {
+            throw new EntityNotFoundException("Entity not found with uid : " + uid);
+        }
+
+        GetUserInfoVO getUserInfoVO = new GetUserInfoVO();
+        getUserInfoVO.UserEntityToVO(findUser);
+
+        return getUserInfoVO;
+    }
 
 //    public boolean signin(UserEntity user) {
 //        UserEntity result = userRepository.findByEmail(user.getEmail());

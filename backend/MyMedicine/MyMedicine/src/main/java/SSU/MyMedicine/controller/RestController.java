@@ -1,5 +1,7 @@
 package SSU.MyMedicine.controller;
 
+import SSU.MyMedicine.VO.GetUserInfoVO;
+
 import SSU.MyMedicine.VO.UserVO;
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.User;
@@ -22,11 +24,6 @@ public class RestController {
     public RestController(UserService userService, AllergicService allergicService) {
         this.userService = userService;
         this.allergicService = allergicService;
-    }
-
-    @GetMapping("/hello")
-    public String test() {
-        return "Hello world";
     }
 
     @PostMapping("/signup")
@@ -55,19 +52,19 @@ public class RestController {
         return null;
     }
 
-    @GetMapping("/getAllergic")
-    public String getAllergic(String username){
-        return userService.findByName(username).toString();
+    @GetMapping("/getUserInfo")
+    public GetUserInfoVO getAllergic(Integer uid){
+        return userService.findByUid(uid);
     }
 
-    @GetMapping("/")
-    public String mainPage() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return email;
-    }
+//    @GetMapping("/")
+//    public String mainPage() {
+//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//        return email;
+//    }
 
+    @GetMapping("/status")
 
-    @GetMapping("/ping")
     public ResponseEntity<String> alive() {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);    //status 204
     }
