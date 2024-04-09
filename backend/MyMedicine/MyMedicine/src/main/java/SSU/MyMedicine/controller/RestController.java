@@ -1,6 +1,7 @@
 package SSU.MyMedicine.controller;
 
 import SSU.MyMedicine.VO.GetUserInfoVO;
+
 import SSU.MyMedicine.VO.UserVO;
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.User;
@@ -63,6 +64,7 @@ public class RestController {
 //    }
 
     @GetMapping("/status")
+
     public ResponseEntity<String> alive() {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);    //status 204
     }
