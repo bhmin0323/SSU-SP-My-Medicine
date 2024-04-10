@@ -7,7 +7,6 @@ import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
 import SSU.MyMedicine.service.UserService;
-import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
