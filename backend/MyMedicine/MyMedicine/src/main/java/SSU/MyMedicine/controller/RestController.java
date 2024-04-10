@@ -1,16 +1,17 @@
 package SSU.MyMedicine.controller;
 
 import SSU.MyMedicine.VO.GetUserInfoVO;
-
+import SSU.MyMedicine.VO.LoginVO;
 import SSU.MyMedicine.VO.UserVO;
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
 import SSU.MyMedicine.service.UserService;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,17 @@ public class RestController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserVO userVO) {
-        return null;
+    public Integer login(@RequestBody LoginVO user) {
+        User findUser = userService.findByName(user.getUsername());
+        if (findUser == null)
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Username not found");
+
+        if (userService.authUser(user))
+            return  findUser.getUid();
+        else
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Incorrect password");
     }
 
     @GetMapping("/getUserInfo")
@@ -64,7 +74,6 @@ public class RestController {
 //    }
 
     @GetMapping("/status")
-
     public ResponseEntity<String> alive() {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);    //status 204
     }
