@@ -63,8 +63,11 @@ public class RestController {
     }
 
     @GetMapping("/getUserInfo")
-    public GetUserInfoVO getAllergic(Integer uid){
-        return userService.findByUid(uid);
+    public GetUserInfoVO getAllergic(@RequestParam("uID") Integer uid){
+        User foundUser = userService.findByUid(uid);
+        GetUserInfoVO user = new GetUserInfoVO();
+        user.UserEntityToVO(foundUser);
+        return  user;
     }
 
 //    @GetMapping("/")
