@@ -80,4 +80,9 @@ public class RestController {
     public ResponseEntity<String> alive() {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);    //status 204
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> entityNotFoundExceptionHandler(EntityNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
