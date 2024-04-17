@@ -64,16 +64,13 @@ public class UserService {
         return userRepository.findByName(username);
     }
 
-    public GetUserInfoVO findByUid(Integer uid) {
+    public User findByUid(Integer uid) {
         User findUser = userRepository.findByUid(uid);
         if (findUser == null) {
             throw new EntityNotFoundException("Entity not found with uid : " + uid);
         }
 
-        GetUserInfoVO getUserInfoVO = new GetUserInfoVO();
-        getUserInfoVO.UserEntityToVO(findUser);
-
-        return getUserInfoVO;
+        return findUser;
     }
 
     public boolean authUser(LoginVO user) {

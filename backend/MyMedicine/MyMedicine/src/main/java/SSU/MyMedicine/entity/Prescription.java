@@ -3,6 +3,7 @@ package SSU.MyMedicine.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Prescription {
     private Integer pid;
 
     @Column(name = "reg_date")
-    private LocalDateTime regDate;
+    private LocalDate regDate;
 
     @Column(name = "duration")
     private Integer duration;
