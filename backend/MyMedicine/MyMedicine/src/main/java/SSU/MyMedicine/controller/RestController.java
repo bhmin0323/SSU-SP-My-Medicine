@@ -86,6 +86,8 @@ public class RestController {
             @RequestPart("image") MultipartFile file,
             @RequestPart("prescription") PrescriptionVO prescription) throws IOException {
         Prescription newPresc = prescriptionService.save(file, prescription);
+//        파이썬으로 이미지 처리하는 프로그램 실행하는 함수
+//        prescriptionService.runImageWarpingPy(newPresc.getImageNum());
         return ResponseEntity.ok(prescription.toString());
     }
 

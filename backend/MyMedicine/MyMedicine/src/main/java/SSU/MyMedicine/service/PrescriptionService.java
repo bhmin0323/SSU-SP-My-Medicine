@@ -72,6 +72,12 @@ public class PrescriptionService {
 
         return prescriptionRepository.save(newPresc);
     }
+    public void runImageWarpingPy(String imageFileName) throws IOException {
+        int lastDotIndex = imageFileName.lastIndexOf('.');
+        String imageNum = imageFileName.substring(0, lastDotIndex);
+        ProcessBuilder processBuilder = new ProcessBuilder("python", "/home/ubuntu/warp.py", imageNum);
+        processBuilder.start();
+    }
     public Prescription findByPid(Integer pid){
         Prescription prescription = prescriptionRepository.findByPid(pid);
         if (prescription == null){
