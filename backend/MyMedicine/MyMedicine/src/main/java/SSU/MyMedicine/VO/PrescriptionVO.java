@@ -1,5 +1,6 @@
 package SSU.MyMedicine.VO;
 
+import SSU.MyMedicine.entity.Prescription;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 

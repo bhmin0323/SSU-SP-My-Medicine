@@ -60,10 +60,16 @@ public class PrescriptionService {
                 .regDate(prescription.getRegDate())
                 .duration(prescription.getDuration())
                 .medList(medicineList)
-                .imageNum(1)
+                .imageNum(imageName)
                 .user(prescUser)
                 .build();
 
         return prescriptionRepository.save(newPresc);
+    }
+    public Prescription findByPid(Integer pid){
+        return prescriptionRepository.findByPid(pid);
+    }
+    public void delete(Prescription prescription){
+        prescriptionRepository.delete(prescription);
     }
 }

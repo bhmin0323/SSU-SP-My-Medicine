@@ -1,10 +1,10 @@
 package SSU.MyMedicine.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -26,10 +26,11 @@ public class Prescription {
     private Integer duration;
 
     @Column(name = "image_num")
-    private Integer imageNum;
+    private String imageNum;
 
     @ManyToOne
     @JoinColumn(name = "uid")
+    @JsonIgnore
     private User user;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -27,14 +27,12 @@ public class RestController {
 
     private final UserService userService;
     private final AllergicService allergicService;
-    private final MedicineService medicineService;
     private final PrescriptionService prescriptionService;
 
     @Autowired
-    public RestController(UserService userService, AllergicService allergicService, MedicineService medicineService, PrescriptionService prescriptionService) {
+    public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService) {
         this.userService = userService;
         this.allergicService = allergicService;
-        this.medicineService = medicineService;
         this.prescriptionService = prescriptionService;
     }
 
@@ -88,14 +86,20 @@ public class RestController {
             @RequestPart("image") MultipartFile file,
             @RequestPart("prescription") PrescriptionVO prescription) throws IOException {
         Prescription newPresc = prescriptionService.save(file, prescription);
-
-        return ResponseEntity.ok(newPresc.toString());
+        return ResponseEntity.ok(prescription.toString());
     }
 
     @GetMapping("/getPrescList")
     public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uid){
         User user = userService.findByUid(uid);
         return ResponseEntity.ok(new PrescListVO(userService.getPrescFromUser(user)));
+    }
+
+    @DeleteMapping("/delPresc")
+    public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pid){
+        Prescription prescription = prescriptionService.findByPid(pid);
+        prescriptionService.delete(prescription);
+        return ResponseEntity.ok("Prescription deleted with pid : " + pid);
     }
 
 //    @GetMapping("/")
