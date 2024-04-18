@@ -7,12 +7,17 @@ import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,6 +78,13 @@ public class PrescriptionService {
             throw new EntityNotFoundException("Entity not found with pid: " + pid);
         }
         return prescription;
+    }
+    public byte[] getPrescImg(String imgPath) throws IOException{
+        InputStream imageStream = new FileInputStream(uploadPath + imgPath);
+        byte[] imageBytes = null;
+        imageBytes = FileCopyUtils.copyToByteArray(imageStream);
+        imageStream.close();
+        return imageBytes;
     }
     public void delete(Prescription prescription){
         prescriptionRepository.delete(prescription);

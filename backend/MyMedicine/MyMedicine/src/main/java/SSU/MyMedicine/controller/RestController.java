@@ -101,6 +101,12 @@ public class RestController {
         return ResponseEntity.ok(new PrescInfo(prescription));
     }
 
+    @GetMapping(value = "/getPrescPic", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPrescPic(@RequestParam("pID") Integer pid) throws IOException{
+        Prescription prescription = prescriptionService.findByPid(pid);
+        return ResponseEntity.ok(prescriptionService.getPrescImg(prescription.getImageNum()));
+    }
+
     @DeleteMapping("/delPresc")
     public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pid){
         Prescription prescription = prescriptionService.findByPid(pid);
