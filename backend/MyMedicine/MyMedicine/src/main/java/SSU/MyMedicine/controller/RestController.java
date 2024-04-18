@@ -1,17 +1,24 @@
 package SSU.MyMedicine.controller;
 
-import SSU.MyMedicine.VO.GetUserInfoVO;
-import SSU.MyMedicine.VO.LoginVO;
-import SSU.MyMedicine.VO.UserVO;
+import SSU.MyMedicine.VO.*;
 import SSU.MyMedicine.entity.Allergic;
+import SSU.MyMedicine.entity.Medicine;
+import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
+import SSU.MyMedicine.service.MedicineService;
+import SSU.MyMedicine.service.PrescriptionService;
 import SSU.MyMedicine.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +27,13 @@ public class RestController {
 
     private final UserService userService;
     private final AllergicService allergicService;
+    private final PrescriptionService prescriptionService;
 
-    public RestController(UserService userService, AllergicService allergicService) {
+    @Autowired
+    public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService) {
         this.userService = userService;
         this.allergicService = allergicService;
+        this.prescriptionService = prescriptionService;
     }
 
     @PostMapping("/signup")
@@ -32,6 +42,7 @@ public class RestController {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "Username Already Exist");
 
+        // allergy exists
         if (!userVO.getAllergicList().isEmpty())
             allergicService.saveIfNotThere(userVO.getAllergicList());
 
@@ -56,15 +67,51 @@ public class RestController {
                     HttpStatus.CONFLICT, "Username not found");
 
         if (userService.authUser(user))
-            return  findUser.getUid();
+            return findUser.getUid();
         else
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "Incorrect password");
     }
 
     @GetMapping("/getUserInfo")
-    public GetUserInfoVO getAllergic(Integer uid){
-        return userService.findByUid(uid);
+    public GetUserInfoVO getAllergic(@RequestParam("uID") Integer uid) {
+        User foundUser = userService.findByUid(uid);
+        GetUserInfoVO user = new GetUserInfoVO();
+        user.UserEntityToVO(foundUser);
+        return user;
+    }
+
+    @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> savePresc(
+            @RequestPart("image") MultipartFile file,
+            @RequestPart("prescription") PrescriptionVO prescription) throws IOException {
+        Prescription newPresc = prescriptionService.save(file, prescription);
+        return ResponseEntity.ok(prescription.toString());
+    }
+
+    @GetMapping("/getPrescList")
+    public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uid){
+        User user = userService.findByUid(uid);
+        return ResponseEntity.ok(new PrescListVO(userService.getPrescFromUser(user)));
+    }
+
+    @GetMapping("/getPrescInfo")
+    public ResponseEntity<PrescInfo> getPrescInfo(@RequestParam("pID") Integer pid){
+        Prescription prescription = prescriptionService.findByPid(pid);
+        return ResponseEntity.ok(new PrescInfo(prescription));
+    }
+
+    @GetMapping(value = "/getPrescPic", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPrescPic(@RequestParam("pID") Integer pid) throws IOException{
+        Prescription prescription = prescriptionService.findByPid(pid);
+        return ResponseEntity.ok(prescriptionService.getPrescImg(prescription.getImageNum()));
+    }
+
+    @DeleteMapping("/delPresc")
+    public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pid){
+        Prescription prescription = prescriptionService.findByPid(pid);
+        prescriptionService.delete(prescription);
+        return ResponseEntity.ok("Prescription deleted with pid : " + pid);
     }
 
 //    @GetMapping("/")
@@ -76,5 +123,14 @@ public class RestController {
     @GetMapping("/status")
     public ResponseEntity<String> alive() {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);    //status 204
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> entityNotFoundExceptionHandler(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> IOExceptionHandler(IOException e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

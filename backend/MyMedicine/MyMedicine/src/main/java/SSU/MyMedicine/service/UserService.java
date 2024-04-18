@@ -4,12 +4,16 @@ import SSU.MyMedicine.DAO.UserRepository;
 import SSU.MyMedicine.VO.GetUserInfoVO;
 import SSU.MyMedicine.VO.LoginVO;
 import SSU.MyMedicine.VO.UserVO;
+import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -64,22 +68,32 @@ public class UserService {
         return userRepository.findByName(username);
     }
 
-    public GetUserInfoVO findByUid(Integer uid) {
+    public User findByUid(Integer uid) {
         User findUser = userRepository.findByUid(uid);
         if (findUser == null) {
             throw new EntityNotFoundException("Entity not found with uid : " + uid);
         }
 
-        GetUserInfoVO getUserInfoVO = new GetUserInfoVO();
-        getUserInfoVO.UserEntityToVO(findUser);
-
-        return getUserInfoVO;
+        return findUser;
     }
 
     public boolean authUser(LoginVO user) {
         boolean login = bCryptPasswordEncoder.matches(user.getPassword(),
                 userRepository.findByName(user.getUsername()).getPassword());
         return login;
+    }
+
+    public List<Integer> getPrescFromUser(User user){
+        List<Prescription> prescList = user.getPrescList();
+        if (prescList.isEmpty())
+            return null;
+
+        List<Integer> pidList = new ArrayList<>();
+        for (Prescription presc : prescList){
+            pidList.add(presc.getPid());
+        }
+
+        return pidList;
     }
 
 //    public List<TodoDTO> findTodoByEmail(String email) {
