@@ -1,9 +1,6 @@
 package SSU.MyMedicine.controller;
 
-import SSU.MyMedicine.VO.GetUserInfoVO;
-import SSU.MyMedicine.VO.LoginVO;
-import SSU.MyMedicine.VO.PrescriptionVO;
-import SSU.MyMedicine.VO.UserVO;
+import SSU.MyMedicine.VO.*;
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
@@ -86,13 +83,19 @@ public class RestController {
         return user;
     }
 
-    @PostMapping(path = "/newPresc", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> savePresc(
             @RequestPart("image") MultipartFile file,
-            @RequestPart("prescription")PrescriptionVO prescription)throws IOException {
-        prescriptionService.save(file, prescription);
+            @RequestPart("prescription") PrescriptionVO prescription) throws IOException {
+        Prescription newPresc = prescriptionService.save(file, prescription);
 
-        return ResponseEntity.ok(prescription.toString());
+        return ResponseEntity.ok(newPresc.toString());
+    }
+
+    @GetMapping("/getPrescList")
+    public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uid){
+        User user = userService.findByUid(uid);
+        return ResponseEntity.ok(new PrescListVO(userService.getPrescFromUser(user)));
     }
 
 //    @GetMapping("/")
@@ -109,5 +112,9 @@ public class RestController {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> entityNotFoundExceptionHandler(EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> IOExceptionHandler(IOException e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

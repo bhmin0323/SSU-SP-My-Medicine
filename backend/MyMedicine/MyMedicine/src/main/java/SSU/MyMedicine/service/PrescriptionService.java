@@ -5,6 +5,7 @@ import SSU.MyMedicine.VO.PrescriptionVO;
 import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class PrescriptionService {
     @Value("${upload.path}")
     private String uploadPath;
 
+    @Transactional
     public Prescription save(MultipartFile file, PrescriptionVO prescription) throws IOException {
         // save image
         Random random = new Random();
