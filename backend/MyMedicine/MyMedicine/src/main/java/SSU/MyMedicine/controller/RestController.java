@@ -95,6 +95,12 @@ public class RestController {
         return ResponseEntity.ok(new PrescListVO(userService.getPrescFromUser(user)));
     }
 
+    @GetMapping("/getPrescInfo")
+    public ResponseEntity<PrescInfo> getPrescInfo(@RequestParam("pID") Integer pid){
+        Prescription prescription = prescriptionService.findByPid(pid);
+        return ResponseEntity.ok(new PrescInfo(prescription));
+    }
+
     @DeleteMapping("/delPresc")
     public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pid){
         Prescription prescription = prescriptionService.findByPid(pid);

@@ -5,6 +5,7 @@ import SSU.MyMedicine.VO.PrescriptionVO;
 import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +68,11 @@ public class PrescriptionService {
         return prescriptionRepository.save(newPresc);
     }
     public Prescription findByPid(Integer pid){
-        return prescriptionRepository.findByPid(pid);
+        Prescription prescription = prescriptionRepository.findByPid(pid);
+        if (prescription == null){
+            throw new EntityNotFoundException("Entity not found with pid: " + pid);
+        }
+        return prescription;
     }
     public void delete(Prescription prescription){
         prescriptionRepository.delete(prescription);
