@@ -48,7 +48,7 @@ public class PrescriptionService {
         Random random = new Random();
         int randomNumber = random.nextInt(10000000);
         String imageName = model.getUid().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
-        byte[] bytes = model.getFile().getBytes();
+        byte[] bytes = model.getImage().getBytes();
         Path path = Paths.get(uploadPath + imageName);
         Files.write(path, bytes);
 

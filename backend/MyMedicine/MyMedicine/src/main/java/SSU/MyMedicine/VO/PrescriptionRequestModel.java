@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 public class PrescriptionRequestModel {
-    private MultipartFile file;
+    private MultipartFile image;
     private Integer uid;
     private LocalDate regDate;
     private Integer duration;

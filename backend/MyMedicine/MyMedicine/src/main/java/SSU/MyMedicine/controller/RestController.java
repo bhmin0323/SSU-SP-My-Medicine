@@ -82,6 +82,7 @@ public class RestController {
     @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> savePresc(
             @ModelAttribute PrescriptionRequestModel model) throws IOException {
+        System.out.println(model.getImage().getName());
         Prescription newPresc = prescriptionService.save(model);
 //        파이썬으로 이미지 처리하는 프로그램 실행하는 함수
 //        prescriptionService.runImageWarpingPy(newPresc.getImageNum());
