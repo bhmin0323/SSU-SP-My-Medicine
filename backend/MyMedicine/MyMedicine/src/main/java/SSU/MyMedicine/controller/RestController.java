@@ -7,7 +7,6 @@ import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
 import SSU.MyMedicine.service.PrescriptionService;
 import SSU.MyMedicine.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,10 +81,9 @@ public class RestController {
     @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> savePresc(
             @ModelAttribute PrescriptionRequestModel model) throws IOException {
-        System.out.println(model.getImage().getName());
         Prescription newPresc = prescriptionService.save(model);
 //        파이썬으로 이미지 처리하는 프로그램 실행하는 함수
-//        prescriptionService.runImageWarpingPy(newPresc.getImageNum());
+        prescriptionService.runImageWarpingPy(newPresc.getImageNum());
         return ResponseEntity.ok(model.toString());
     }
 

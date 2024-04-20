@@ -8,14 +8,12 @@ import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,10 +78,11 @@ public class PrescriptionService {
 
         return prescriptionRepository.save(newPresc);
     }
+    @Async
     public void runImageWarpingPy(String imageFileName) throws IOException {
         int lastDotIndex = imageFileName.lastIndexOf('.');
         String imageNum = imageFileName.substring(0, lastDotIndex);
-        ProcessBuilder processBuilder = new ProcessBuilder("python", "/home/ubuntu/warp.py", imageNum);
+        ProcessBuilder processBuilder = new ProcessBuilder("python3", "/home/ubuntu/warp.py", imageNum);
         processBuilder.start();
     }
     public Prescription findByPid(Integer pid){
