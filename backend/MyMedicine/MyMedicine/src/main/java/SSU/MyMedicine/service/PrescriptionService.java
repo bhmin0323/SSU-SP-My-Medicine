@@ -1,6 +1,7 @@
 package SSU.MyMedicine.service;
 
 import SSU.MyMedicine.DAO.PrescriptionRepository;
+import SSU.MyMedicine.VO.PrescriptionRequestModel;
 import SSU.MyMedicine.VO.PrescriptionVO;
 import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
@@ -42,14 +43,21 @@ public class PrescriptionService {
     private String uploadPath;
 
     @Transactional
-    public Prescription save(MultipartFile file, PrescriptionVO prescription) throws IOException {
+    public Prescription save(PrescriptionRequestModel model) throws IOException {
         // save image
         Random random = new Random();
         int randomNumber = random.nextInt(10000000);
-        String imageName = prescription.getUid().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
-        byte[] bytes = file.getBytes();
+        String imageName = model.getUid().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
+        byte[] bytes = model.getFile().getBytes();
         Path path = Paths.get(uploadPath + imageName);
         Files.write(path, bytes);
+
+        PrescriptionVO prescription = PrescriptionVO.builder()
+                .uid(model.getUid())
+                .duration(model.getDuration())
+                .medList(model.getMedList())
+                .regDate(model.getRegDate())
+                .build();
 
         //         save new medicine to DB
         medicineService.saveIfNotThere(prescription.getMedList());

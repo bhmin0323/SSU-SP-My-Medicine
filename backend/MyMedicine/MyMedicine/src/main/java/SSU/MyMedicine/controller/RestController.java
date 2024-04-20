@@ -2,20 +2,18 @@ package SSU.MyMedicine.controller;
 
 import SSU.MyMedicine.VO.*;
 import SSU.MyMedicine.entity.Allergic;
-import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
-import SSU.MyMedicine.service.MedicineService;
 import SSU.MyMedicine.service.PrescriptionService;
 import SSU.MyMedicine.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -83,12 +81,11 @@ public class RestController {
 
     @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> savePresc(
-            @RequestPart("image") MultipartFile file,
-            @RequestPart("prescription") PrescriptionVO prescription) throws IOException {
-        Prescription newPresc = prescriptionService.save(file, prescription);
+            @ModelAttribute PrescriptionRequestModel model) throws IOException {
+        Prescription newPresc = prescriptionService.save(model);
 //        파이썬으로 이미지 처리하는 프로그램 실행하는 함수
 //        prescriptionService.runImageWarpingPy(newPresc.getImageNum());
-        return ResponseEntity.ok(prescription.toString());
+        return ResponseEntity.ok(model.toString());
     }
 
     @GetMapping("/getPrescList")
