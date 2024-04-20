@@ -1,14 +1,15 @@
 package SSU.MyMedicine.controller;
 
+import SSU.MyMedicine.OpenAI.OpenAIResponse;
 import SSU.MyMedicine.VO.*;
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
+import SSU.MyMedicine.service.OpenAIService;
 import SSU.MyMedicine.service.PrescriptionService;
 import SSU.MyMedicine.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,13 @@ public class RestController {
     private final UserService userService;
     private final AllergicService allergicService;
     private final PrescriptionService prescriptionService;
+    private final OpenAIService openAIService;
 
-    @Autowired
-    public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService) {
+    public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService, OpenAIService openAIService) {
         this.userService = userService;
         this.allergicService = allergicService;
         this.prescriptionService = prescriptionService;
+        this.openAIService = openAIService;
     }
 
     @PostMapping("/signup")
@@ -79,12 +81,13 @@ public class RestController {
     }
 
     @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> savePresc(
+    public ResponseEntity<Integer> savePresc(
             @ModelAttribute PrescriptionRequestModel model) throws IOException {
         Prescription newPresc = prescriptionService.save(model);
 //        파이썬으로 이미지 처리하는 프로그램 실행하는 함수
         prescriptionService.runImageWarpingPy(newPresc.getImageNum());
-        return ResponseEntity.ok(model.toString());
+
+        return ResponseEntity.ok(newPresc.getPid());
     }
 
     @GetMapping("/getPrescList")
