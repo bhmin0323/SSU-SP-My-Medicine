@@ -13,7 +13,7 @@ import java.util.List;
 @ToString
 public class PrescriptionRequestModel {
     private MultipartFile image;
-    private Integer uid;
+    private Integer uID;
     private LocalDate regDate;
     private Integer duration;
     private List<String> medList;

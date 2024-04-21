@@ -1,12 +1,10 @@
 package SSU.MyMedicine.controller;
 
-import SSU.MyMedicine.OpenAI.OpenAIResponse;
 import SSU.MyMedicine.VO.*;
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
-import SSU.MyMedicine.service.OpenAIService;
 import SSU.MyMedicine.service.PrescriptionService;
 import SSU.MyMedicine.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,13 +24,11 @@ public class RestController {
     private final UserService userService;
     private final AllergicService allergicService;
     private final PrescriptionService prescriptionService;
-    private final OpenAIService openAIService;
 
-    public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService, OpenAIService openAIService) {
+    public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService) {
         this.userService = userService;
         this.allergicService = allergicService;
         this.prescriptionService = prescriptionService;
-        this.openAIService = openAIService;
     }
 
     @PostMapping("/signup")
@@ -73,8 +69,8 @@ public class RestController {
     }
 
     @GetMapping("/getUserInfo")
-    public GetUserInfoVO getAllergic(@RequestParam("uID") Integer uid) {
-        User foundUser = userService.findByUid(uid);
+    public GetUserInfoVO getAllergic(@RequestParam("uID") Integer uID) {
+        User foundUser = userService.findByUid(uID);
         GetUserInfoVO user = new GetUserInfoVO();
         user.UserEntityToVO(foundUser);
         return user;
@@ -91,28 +87,28 @@ public class RestController {
     }
 
     @GetMapping("/getPrescList")
-    public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uid){
-        User user = userService.findByUid(uid);
+    public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uID){
+        User user = userService.findByUid(uID);
         return ResponseEntity.ok(new PrescListVO(userService.getPrescFromUser(user)));
     }
 
     @GetMapping("/getPrescInfo")
-    public ResponseEntity<PrescInfo> getPrescInfo(@RequestParam("pID") Integer pid){
-        Prescription prescription = prescriptionService.findByPid(pid);
+    public ResponseEntity<PrescInfo> getPrescInfo(@RequestParam("pID") Integer pID){
+        Prescription prescription = prescriptionService.findByPid(pID);
         return ResponseEntity.ok(new PrescInfo(prescription));
     }
 
     @GetMapping(value = "/getPrescPic", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getPrescPic(@RequestParam("pID") Integer pid) throws IOException{
-        Prescription prescription = prescriptionService.findByPid(pid);
+    public ResponseEntity<byte[]> getPrescPic(@RequestParam("pID") Integer pID) throws IOException{
+        Prescription prescription = prescriptionService.findByPid(pID);
         return ResponseEntity.ok(prescriptionService.getPrescImg(prescription.getImageNum()));
     }
 
     @DeleteMapping("/delPresc")
-    public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pid){
-        Prescription prescription = prescriptionService.findByPid(pid);
+    public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pID){
+        Prescription prescription = prescriptionService.findByPid(pID);
         prescriptionService.delete(prescription);
-        return ResponseEntity.ok("Prescription deleted with pid : " + pid);
+        return ResponseEntity.ok("Prescription deleted with pid : " + pID);
     }
 
 //    @GetMapping("/")

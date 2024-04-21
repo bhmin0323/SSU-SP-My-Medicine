@@ -2,6 +2,7 @@ package SSU.MyMedicine.VO;
 
 import SSU.MyMedicine.entity.Allergic;
 import SSU.MyMedicine.entity.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -13,12 +14,16 @@ import java.util.List;
 @Getter
 @Setter
 public class GetUserInfoVO {
-    private Integer uid;
+    private Integer uID;
     private String name;
     private List<Allergic> allergic;
 
+    @JsonProperty("uID")
+    public Integer getuID(){
+        return this.uID;
+    }
     public void UserEntityToVO(User user){
-        this.uid = user.getUid();
+        this.uID = user.getUid();
         this.name = user.getName();
         this.allergic = user.getAllergicList();
     }

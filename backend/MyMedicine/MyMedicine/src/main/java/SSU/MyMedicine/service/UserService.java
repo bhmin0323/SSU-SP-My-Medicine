@@ -1,7 +1,6 @@
 package SSU.MyMedicine.service;
 
 import SSU.MyMedicine.DAO.UserRepository;
-import SSU.MyMedicine.VO.GetUserInfoVO;
 import SSU.MyMedicine.VO.LoginVO;
 import SSU.MyMedicine.VO.UserVO;
 import SSU.MyMedicine.entity.Prescription;

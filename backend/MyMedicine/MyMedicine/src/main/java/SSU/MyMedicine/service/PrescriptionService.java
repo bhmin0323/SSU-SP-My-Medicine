@@ -45,13 +45,13 @@ public class PrescriptionService {
         // save image
         Random random = new Random();
         int randomNumber = random.nextInt(10000000);
-        String imageName = model.getUid().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
+        String imageName = model.getUID().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
         byte[] bytes = model.getImage().getBytes();
         Path path = Paths.get(uploadPath + imageName);
         Files.write(path, bytes);
 
         PrescriptionVO prescription = PrescriptionVO.builder()
-                .uid(model.getUid())
+                .uID(model.getUID())
                 .duration(model.getDuration())
                 .medList(model.getMedList())
                 .regDate(model.getRegDate())
@@ -66,7 +66,7 @@ public class PrescriptionService {
             medicineList.add(medicine);
         }
 
-        User prescUser = userService.findByUid(prescription.getUid());
+        User prescUser = userService.findByUid(prescription.getUID());
 
         Prescription newPresc = Prescription.builder()
                 .regDate(prescription.getRegDate())
@@ -85,10 +85,10 @@ public class PrescriptionService {
         ProcessBuilder processBuilder = new ProcessBuilder("python3", "/home/ubuntu/warp.py", imageNum);
         processBuilder.start();
     }
-    public Prescription findByPid(Integer pid){
-        Prescription prescription = prescriptionRepository.findByPid(pid);
+    public Prescription findByPid(Integer pID){
+        Prescription prescription = prescriptionRepository.findByPid(pID);
         if (prescription == null){
-            throw new EntityNotFoundException("Entity not found with pid: " + pid);
+            throw new EntityNotFoundException("Entity not found with pid: " + pID);
         }
         return prescription;
     }

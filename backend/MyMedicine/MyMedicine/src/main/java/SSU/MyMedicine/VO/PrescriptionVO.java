@@ -1,11 +1,9 @@
 package SSU.MyMedicine.VO;
 
-import SSU.MyMedicine.entity.Prescription;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -15,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PrescriptionVO {
-    private Integer uid;
+    private Integer uID;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate regDate;

@@ -1,16 +1,15 @@
 package SSU.MyMedicine.VO;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-@Getter
 public class PrescListVO {
     List<Integer> pID;
-    public PrescListVO(List<Integer> pid){
-        this.pID = pid;
+    @JsonProperty("pID")
+    public List<Integer> getpID(){
+        return this.pID;
+    }
+    public PrescListVO(List<Integer> pID){
+        this.pID = pID;
     }
 }
