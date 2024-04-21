@@ -1,10 +1,8 @@
 package SSU.MyMedicine.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Builder
@@ -20,4 +18,9 @@ public class Allergic {
 
     @Column(name = "info", nullable = false)
     private String info;
+
+    @JsonProperty("aID")
+    public Integer getAid(){
+        return this.aid;
+    }
 }

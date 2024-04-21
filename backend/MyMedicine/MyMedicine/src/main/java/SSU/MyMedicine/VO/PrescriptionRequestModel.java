@@ -1,7 +1,9 @@
 package SSU.MyMedicine.VO;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,16 +11,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class PrescriptionVO {
+public class PrescriptionRequestModel {
+    private MultipartFile image;
     private Integer uID;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate regDate;
-
     private Integer duration;
-
     private List<String> medList;
 }

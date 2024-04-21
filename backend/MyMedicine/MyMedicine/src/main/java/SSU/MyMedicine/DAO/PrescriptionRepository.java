@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Integer> {
-    public Prescription findByPid(Integer pid);
+    public Prescription findByPid(Integer pID);
 }

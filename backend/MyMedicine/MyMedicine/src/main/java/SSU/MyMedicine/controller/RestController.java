@@ -2,20 +2,16 @@ package SSU.MyMedicine.controller;
 
 import SSU.MyMedicine.VO.*;
 import SSU.MyMedicine.entity.Allergic;
-import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import SSU.MyMedicine.service.AllergicService;
-import SSU.MyMedicine.service.MedicineService;
 import SSU.MyMedicine.service.PrescriptionService;
 import SSU.MyMedicine.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -29,7 +25,6 @@ public class RestController {
     private final AllergicService allergicService;
     private final PrescriptionService prescriptionService;
 
-    @Autowired
     public RestController(UserService userService, AllergicService allergicService, PrescriptionService prescriptionService) {
         this.userService = userService;
         this.allergicService = allergicService;
@@ -74,44 +69,46 @@ public class RestController {
     }
 
     @GetMapping("/getUserInfo")
-    public GetUserInfoVO getAllergic(@RequestParam("uID") Integer uid) {
-        User foundUser = userService.findByUid(uid);
+    public GetUserInfoVO getAllergic(@RequestParam("uID") Integer uID) {
+        User foundUser = userService.findByUid(uID);
         GetUserInfoVO user = new GetUserInfoVO();
         user.UserEntityToVO(foundUser);
         return user;
     }
 
     @PostMapping(path = "/newPresc", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> savePresc(
-            @RequestPart("image") MultipartFile file,
-            @RequestPart("prescription") PrescriptionVO prescription) throws IOException {
-        Prescription newPresc = prescriptionService.save(file, prescription);
-        return ResponseEntity.ok(prescription.toString());
+    public ResponseEntity<Integer> savePresc(
+            @ModelAttribute PrescriptionRequestModel model) throws IOException {
+        Prescription newPresc = prescriptionService.save(model);
+//        파이썬으로 이미지 처리하는 프로그램 실행하는 함수
+        prescriptionService.runImageWarpingPy(newPresc.getImageNum());
+
+        return ResponseEntity.ok(newPresc.getPid());
     }
 
     @GetMapping("/getPrescList")
-    public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uid){
-        User user = userService.findByUid(uid);
+    public ResponseEntity<PrescListVO> prescList(@RequestParam("uID") Integer uID){
+        User user = userService.findByUid(uID);
         return ResponseEntity.ok(new PrescListVO(userService.getPrescFromUser(user)));
     }
 
     @GetMapping("/getPrescInfo")
-    public ResponseEntity<PrescInfo> getPrescInfo(@RequestParam("pID") Integer pid){
-        Prescription prescription = prescriptionService.findByPid(pid);
+    public ResponseEntity<PrescInfo> getPrescInfo(@RequestParam("pID") Integer pID){
+        Prescription prescription = prescriptionService.findByPid(pID);
         return ResponseEntity.ok(new PrescInfo(prescription));
     }
 
     @GetMapping(value = "/getPrescPic", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getPrescPic(@RequestParam("pID") Integer pid) throws IOException{
-        Prescription prescription = prescriptionService.findByPid(pid);
+    public ResponseEntity<byte[]> getPrescPic(@RequestParam("pID") Integer pID) throws IOException{
+        Prescription prescription = prescriptionService.findByPid(pID);
         return ResponseEntity.ok(prescriptionService.getPrescImg(prescription.getImageNum()));
     }
 
     @DeleteMapping("/delPresc")
-    public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pid){
-        Prescription prescription = prescriptionService.findByPid(pid);
+    public ResponseEntity<String> delPresc(@RequestParam("pID")Integer pID){
+        Prescription prescription = prescriptionService.findByPid(pID);
         prescriptionService.delete(prescription);
-        return ResponseEntity.ok("Prescription deleted with pid : " + pid);
+        return ResponseEntity.ok("Prescription deleted with pid : " + pID);
     }
 
 //    @GetMapping("/")

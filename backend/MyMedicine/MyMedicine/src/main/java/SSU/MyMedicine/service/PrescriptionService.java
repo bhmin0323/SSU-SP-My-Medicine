@@ -1,20 +1,19 @@
 package SSU.MyMedicine.service;
 
 import SSU.MyMedicine.DAO.PrescriptionRepository;
+import SSU.MyMedicine.VO.PrescriptionRequestModel;
 import SSU.MyMedicine.VO.PrescriptionVO;
 import SSU.MyMedicine.entity.Medicine;
 import SSU.MyMedicine.entity.Prescription;
 import SSU.MyMedicine.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,14 +41,21 @@ public class PrescriptionService {
     private String uploadPath;
 
     @Transactional
-    public Prescription save(MultipartFile file, PrescriptionVO prescription) throws IOException {
+    public Prescription save(PrescriptionRequestModel model) throws IOException {
         // save image
         Random random = new Random();
         int randomNumber = random.nextInt(10000000);
-        String imageName = prescription.getUid().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
-        byte[] bytes = file.getBytes();
+        String imageName = model.getUID().toString() + "0000" + Integer.toString(randomNumber) + ".jpg";
+        byte[] bytes = model.getImage().getBytes();
         Path path = Paths.get(uploadPath + imageName);
         Files.write(path, bytes);
+
+        PrescriptionVO prescription = PrescriptionVO.builder()
+                .uID(model.getUID())
+                .duration(model.getDuration())
+                .medList(model.getMedList())
+                .regDate(model.getRegDate())
+                .build();
 
         //         save new medicine to DB
         medicineService.saveIfNotThere(prescription.getMedList());
@@ -60,7 +66,7 @@ public class PrescriptionService {
             medicineList.add(medicine);
         }
 
-        User prescUser = userService.findByUid(prescription.getUid());
+        User prescUser = userService.findByUid(prescription.getUID());
 
         Prescription newPresc = Prescription.builder()
                 .regDate(prescription.getRegDate())
@@ -72,10 +78,17 @@ public class PrescriptionService {
 
         return prescriptionRepository.save(newPresc);
     }
-    public Prescription findByPid(Integer pid){
-        Prescription prescription = prescriptionRepository.findByPid(pid);
+    @Async
+    public void runImageWarpingPy(String imageFileName) throws IOException {
+        int lastDotIndex = imageFileName.lastIndexOf('.');
+        String imageNum = imageFileName.substring(0, lastDotIndex);
+        ProcessBuilder processBuilder = new ProcessBuilder("python3", "/home/ubuntu/warp.py", imageNum);
+        processBuilder.start();
+    }
+    public Prescription findByPid(Integer pID){
+        Prescription prescription = prescriptionRepository.findByPid(pID);
         if (prescription == null){
-            throw new EntityNotFoundException("Entity not found with pid: " + pid);
+            throw new EntityNotFoundException("Entity not found with pid: " + pID);
         }
         return prescription;
     }

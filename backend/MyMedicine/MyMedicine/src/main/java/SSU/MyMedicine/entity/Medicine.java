@@ -3,9 +3,8 @@ package SSU.MyMedicine.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +21,7 @@ public class Medicine {
 
     @Column(name = "med_comp")
     private String medComp;
+
+    @Column(name = "warning")
+    private String warning;
 }
