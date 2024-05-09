@@ -131,6 +131,7 @@ class ApiService {
       return resData;
     }
     log("getPrescPic Error: ${response.statusCode}");
+    //이미지 없을 경우
     return Uint8List(0);
     throw Error();
   }
