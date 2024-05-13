@@ -17,25 +17,79 @@ class PrescDetailScreen extends StatelessWidget {
     required this.prescModel,
   });
 
-  final List<String> randomTexts = [
-    '항히스타민제',
-    '세균감염증치료제',
-    '위점막보호제',
-    '알러지 치료제',
-    '소염진통제',
-    '알러지 치료제',
-    '위산억제제',
-    '세균감염증 치료제',
-    '위점막보호제',
-    '비스테로이드성소염제'
-  ];
-
   String _getPrescPicLink(int prescId) {
     String url = "http://43.200.168.39:8080/getPrescPic?pID=$prescId";
     log("getPrescPicLink: $url");
 
     return url;
   }
+
+////////////////////////////////////////////////
+  // Function to show the warning dialog
+  void _showWarningDialog(BuildContext context) {
+    String warningMessage = '';
+    if (prescModel.duplicateMed != null) {
+      warningMessage +=
+          '중복 복용 주의: ${prescModel.duplicateMed!.join(', ')} 이 성분명의 약품을 중복 복용할 위험이 있습니다\n';
+    }
+    if (prescModel.allergicMed != null) {
+      warningMessage +=
+          '알러지 주의: ${prescModel.allergicMed!.join(', ')} 이 성분명의 약품은 알러지 위험이 있는 약품입니다';
+    }
+    if (warningMessage.isNotEmpty) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            margin: const EdgeInsets.only(
+              left: 25,
+              right: 25,
+              bottom: 40,
+            ),
+            padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.height * 0.03,
+                horizontal: MediaQuery.of(context).size.width * 0.07),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(
+                Radius.circular(12),
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.warning_amber_rounded,
+                          color: Color(0xffe66452), size: 26),
+                      Text(
+                        " 경고 ",
+                        style: TextStyle(
+                          fontSize: 26,
+                          color: Color(0xffe66452),
+                        ),
+                      ),
+                      Icon(Icons.warning_amber_rounded,
+                          color: Color(0xffe66452), size: 26),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(warningMessage),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+///////////////////////////////////////////////
 
 /////////////////////////////////////////////////////
   // 삭제 함수 정의
@@ -63,8 +117,12 @@ class PrescDetailScreen extends StatelessWidget {
   }
 
 ///////////////////////////////////////////////////
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _showWarningDialog(context);
+    });
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -196,7 +254,7 @@ class PrescDetailScreen extends StatelessWidget {
                             ),
                             Text(
                                 // "  |  ${randomTexts[math.Random().nextInt(randomTexts.length)]}"),
-                                "  |  ${randomTexts[i]}"),
+                                "  |  ${prescModel.medcompList[i]}"),
                           ],
                         ),
                     ],
