@@ -28,13 +28,15 @@ class PrescDetailScreen extends StatelessWidget {
   // Function to show the warning dialog
   void _showWarningDialog(BuildContext context) {
     String warningMessage = '';
-    if (prescModel.duplicateMed != null) {
-      warningMessage +=
-          '중복 복용 주의: ${prescModel.duplicateMed!.join(', ')} 이 성분명의 약품을 중복 복용할 위험이 있습니다\n';
+    if (prescModel.duplicateMed != null &&
+        prescModel.duplicateMed!.isNotEmpty) {
+      warningMessage += '중복 복용 주의\n';
+      warningMessage += '${prescModel.duplicateMed!.join(', ')}\n';
+      warningMessage += '이 성분명의 약품을 중복 복용할 위험이 있습니다\n';
     }
-    if (prescModel.allergicMed != null) {
+    if (prescModel.allergicMed != null && prescModel.allergicMed!.isNotEmpty) {
       warningMessage +=
-          '알러지 주의: ${prescModel.allergicMed!.join(', ')} 이 성분명의 약품은 알러지 위험이 있는 약품입니다';
+          '알러지 주의\n ${prescModel.allergicMed!.join(', ')} \n 이 성분명의 약품은 알러지 위험이 있는 약품입니다';
     }
     if (warningMessage.isNotEmpty) {
       showModalBottomSheet(
