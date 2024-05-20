@@ -24,8 +24,6 @@ class PrescDetailScreen extends StatelessWidget {
     return url;
   }
 
-////////////////////////////////////////////////
-  // Function to show the warning dialog
   void _showWarningDialog(BuildContext context) {
     String warningMessage = '';
     if (prescModel.duplicateMed != null &&
@@ -91,24 +89,19 @@ class PrescDetailScreen extends StatelessWidget {
       );
     }
   }
-///////////////////////////////////////////////
 
-/////////////////////////////////////////////////////
-  // 삭제 함수 정의
   Future<void> _deletePrescription(
       BuildContext context, int prescriptionId) async {
     try {
       await _apiService.deletePrescription(prescriptionId);
-      // 성공적으로 삭제되면 알림을 띄웁니다.
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('처방전이 성공적으로 삭제되었습니다.'),
           duration: Duration(seconds: 2),
         ),
       );
-      // 삭제 후 화면을 갱신할 수 있는 로직을 추가할 수 있습니다.
     } catch (e) {
-      // 실패 시 에러 메시지를 띄웁니다.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('처방전 삭제 중 오류가 발생했습니다.'),
@@ -117,8 +110,6 @@ class PrescDetailScreen extends StatelessWidget {
       );
     }
   }
-
-///////////////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
