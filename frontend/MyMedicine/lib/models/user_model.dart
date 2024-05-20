@@ -18,12 +18,10 @@
 // }
 class UserModel {
   final int uID;
-  final String name;
   final List<AllergicInfo> allergic;
 
   UserModel({
     required this.uID,
-    required this.name,
     required this.allergic,
   });
 
@@ -35,8 +33,7 @@ class UserModel {
         .toList(); // Map each item to AllergicInfo object
 
     return UserModel(
-      uID: json['uID'] ?? 0,
-      name: json['name'] ?? "",
+      uID: json['uID'] ?? "",
       allergic: allergicList,
     );
   }

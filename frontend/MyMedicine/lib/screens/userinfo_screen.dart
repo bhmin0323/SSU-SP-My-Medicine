@@ -51,8 +51,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 children: [
                   Text('User ID: ${user.uID}'),
                   SizedBox(height: 10),
-                  Text('Name: ${user.name}'),
-                  SizedBox(height: 10),
                   Text('Allergies:'),
                   Column(
                     children: user.allergic.map((allergic) {
