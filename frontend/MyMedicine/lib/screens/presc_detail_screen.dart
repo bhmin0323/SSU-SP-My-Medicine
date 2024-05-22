@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/services/api_services.dart';
+import 'package:medicineapp/screens/presc_list_screen.dart';
 
 class PrescDetailScreen extends StatefulWidget {
   final PrescModel prescModel;
@@ -120,8 +121,8 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
           duration: Duration(seconds: 2),
         ),
       );
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/prescList', (route) => false);
+      // Navigator.of(context)
+      //     .pushNamedAndRemoveUntil('/prescList', (route) => false);
     } catch (e) {
       _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
@@ -176,6 +177,11 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
                                   _deletePrescription(
                                       context, widget.prescModel.prescIdValue);
                                   Navigator.of(context).pop();
+                                  // if (_isDeleting = true) {
+                                  //   Navigator.of(context)
+                                  //       .pushNamedAndRemoveUntil(
+                                  //           '/prescList', (route) => false);
+                                  // }
                                 },
                                 child: const Text("삭제"),
                               ),
