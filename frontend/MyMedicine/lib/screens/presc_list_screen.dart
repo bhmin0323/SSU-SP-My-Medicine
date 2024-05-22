@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:medicineapp/models/prescription_list_model.dart';
 import 'package:medicineapp/models/user_model.dart';
@@ -10,7 +11,7 @@ import 'package:restart_app/restart_app.dart';
 
 class PrescListScreen extends StatefulWidget {
   final int uid;
-  Function func;
+  final Function func;
 
   PrescListScreen({
     super.key,
@@ -29,14 +30,15 @@ class _PrescListScreenState extends State<PrescListScreen> {
   @override
   void initState() {
     super.initState();
-    futureData = fetchData();
+    fetchData();
   }
 
-  Future<List<dynamic>> fetchData() {
-    return Future.wait([
+  Future<void> fetchData() async {
+    futureData = Future.wait([
       apiService.pingServer(),
       apiService.getPrescList(widget.uid),
     ]);
+    setState(() {}); // 화면 갱신
   }
 
   @override
@@ -59,21 +61,23 @@ class _PrescListScreenState extends State<PrescListScreen> {
               Row(
                 children: [
                   IconButton(
-                      onPressed: () {
-                        setState(() {
-                          futureData = fetchData();
-                        });
-                      },
-                      icon: const Icon(Icons.refresh,
-                          color: Colors.white, size: 32)),
+                    onPressed: () {
+                      setState(() {
+                        fetchData();
+                      });
+                    },
+                    icon: const Icon(Icons.refresh,
+                        color: Colors.white, size: 32),
+                  ),
                   const Icon(Icons.notifications,
                       color: Colors.white, size: 32),
                   IconButton(
-                      onPressed: () {
-                        Restart.restartApp();
-                      },
-                      icon: const Icon(Icons.logout,
-                          color: Colors.white, size: 32)),
+                    onPressed: () {
+                      Restart.restartApp();
+                    },
+                    icon:
+                        const Icon(Icons.logout, color: Colors.white, size: 32),
+                  ),
                 ],
               ),
             ],
@@ -99,31 +103,29 @@ class _PrescListScreenState extends State<PrescListScreen> {
                     child: Text('처방전 정보가 없습니다.'),
                   );
                 } else {
-                  final responseData = snapshot.data;
-                  if (responseData != null) {
-                    final serverStatusCode = responseData[0];
-                    final prescriptionList = responseData[1];
-                    if (serverStatusCode != 204) {
+                  if (snapshot.data != null) {
+                    if (snapshot.data![0] != 204) {
                       return const Center(
                         child: Text('Server status error'),
                       );
                     } else {
-                      log("presc_list_screen: ${prescriptionList.toString()}");
-                      log("presc_list_screen: ${prescriptionList.prescIdList.toString()}");
-                      if (prescriptionList == null ||
-                          prescriptionList.prescIdList[0] == null) {
+                      log("presc_list_screen: ${snapshot.data![1].toString()}");
+                      log("presc_list_screen: ${snapshot.data![1].prescIdList.toString()}");
+                      if (snapshot.data![1] == null ||
+                          snapshot.data![1].prescIdList[0] == null) {
                         return const Center(
                           child: Text('No data'),
                         );
                       } else {
                         return ListView.builder(
-                          itemCount: prescriptionList.length,
+                          itemCount: snapshot.data![1].length,
                           itemBuilder: (context, index) {
                             return PrescWidget(
                               index: index,
                               uid: widget.uid,
-                              prescId: prescriptionList.prescIdList[
-                                  prescriptionList.length - index - 1],
+                              prescId: snapshot.data![1].prescIdList[
+                                  snapshot.data![1].length - index - 1],
+                              onDeleted: fetchData, // 처방전 삭제 후 데이터 갱신
                             );
                           },
                         );

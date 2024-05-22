@@ -12,13 +12,14 @@ import 'package:medicineapp/services/api_services.dart';
 // ignore: must_be_immutable
 class PrescWidget extends StatelessWidget {
   final int index, uid, prescId;
-  // final String desc;
+  final VoidCallback onDeleted; // onDeleted 매개변수 추가
 
   PrescWidget({
     super.key,
     required this.index,
     required this.prescId,
     required this.uid,
+    required this.onDeleted, // onDeleted 매개변수 추가
   });
 
   final ApiService apiService = ApiService();
@@ -62,6 +63,7 @@ class PrescWidget extends StatelessWidget {
                 prescId: prescId,
                 context: context,
                 prescModel: prescModel,
+                onDeleted: onDeleted,
               ),
             );
           } else {
@@ -75,6 +77,7 @@ class PrescWidget extends StatelessWidget {
                 prescId: prescId,
                 context: context,
                 prescModel: prescModel,
+                onDeleted: onDeleted,
               ),
             );
           }
@@ -88,12 +91,14 @@ class _BuildPrescWidget extends StatelessWidget {
   final int prescId;
   final BuildContext context;
   final PrescModel prescModel;
+  final VoidCallback onDeleted;
 
   const _BuildPrescWidget({
     // super.key,
     required this.context,
     required this.prescModel,
     required this.prescId,
+    required this.onDeleted,
   });
 
   String _getPrescPicLink(int prescId) {
@@ -115,6 +120,10 @@ class _BuildPrescWidget extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => PrescDetailScreen(
               prescModel: prescModel,
+              // onDeleted: onDeleted,
+              onDeleted: () {
+                Navigator.popUntil(context, ModalRoute.withName('/prescList'));
+              },
             ),
           ),
         );

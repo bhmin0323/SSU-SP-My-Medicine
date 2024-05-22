@@ -5,8 +5,13 @@ import 'package:medicineapp/services/api_services.dart';
 
 class PrescDetailScreen extends StatefulWidget {
   final PrescModel prescModel;
-  const PrescDetailScreen({Key? key, required this.prescModel})
-      : super(key: key);
+  final VoidCallback onDeleted;
+
+  const PrescDetailScreen({
+    Key? key,
+    required this.prescModel,
+    required this.onDeleted,
+  }) : super(key: key);
 
   @override
   _PrescDetailScreenState createState() => _PrescDetailScreenState();
@@ -16,6 +21,7 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
   final ApiService _apiService = ApiService();
   bool _hasShownWarning = false;
   bool _isDeleting = false;
+  ScaffoldMessengerState? _scaffoldMessengerState;
 
   @override
   void initState() {
@@ -26,6 +32,12 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
         _hasShownWarning = true;
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scaffoldMessengerState = ScaffoldMessenger.of(context);
   }
 
   String _getPrescPicLink(int prescId) {
@@ -102,14 +114,16 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
     });
     try {
       await _apiService.deletePrescription(prescriptionId);
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
           content: Text('처방전이 성공적으로 삭제되었습니다.'),
           duration: Duration(seconds: 2),
         ),
       );
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/prescList', (route) => false);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
           content: Text('처방전 삭제 중 오류가 발생했습니다.'),
           duration: Duration(seconds: 2),
@@ -120,6 +134,12 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
         _isDeleting = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _scaffoldMessengerState = null;
+    super.dispose();
   }
 
   @override
