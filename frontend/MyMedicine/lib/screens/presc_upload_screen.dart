@@ -121,7 +121,26 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
     if (uploadResult != -1) {
       showToast("처방전이 등록되었습니다.");
       widget.func(context);
+      _clearInputs();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              PrescListScreen(uid: widget.uid, func: widget.func),
+        ),
+      );
     }
+  }
+
+  void _clearInputs() {
+    _prescDaysController.clear();
+    _regYearController.clear();
+    _regMonthController.clear();
+    _regDateController.clear();
+    _controllers.forEach((controller) => controller.clear());
+    setState(() {
+      _image = null;
+    });
   }
 
   Future<int> _uploadPresc(int uid, String prescriptionDate, int duration,
