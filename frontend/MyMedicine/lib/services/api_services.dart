@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiService {
-  static const String baseUrl = '43.200.168.39:8080';
+  static const String baseUrl = 'http://43.200.168.39:8080';
 // GoogleSignIn 인스턴스 생성
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email'],

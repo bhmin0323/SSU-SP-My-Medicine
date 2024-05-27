@@ -139,7 +139,7 @@ class LoginScreen extends StatelessWidget {
                         width: 50,
                         height: 50,
                       ),
-                      label: Text('Google로 로그인'),
+                      label: Text('로 로그인'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         primary: Colors.grey,
