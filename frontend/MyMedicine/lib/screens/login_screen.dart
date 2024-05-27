@@ -110,6 +110,50 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
+
+                  /////////////////////////////////////////////
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          await _apiService.googleLogin();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HomeScreen(uid: 0), // 소셜 로그인 시 uid 처리 필요
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('구글 로그인을 실패했습니다. 다시 시도해주세요.'),
+                            ),
+                          );
+                        }
+                      },
+                      icon: Image.asset(
+                        'assets/icons/google_icon.png', // 구글 아이콘 경로
+                        width: 50,
+                        height: 50,
+                      ),
+                      label: Text('Google로 로그인'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        primary: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  /////////////////////////////////////////////
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

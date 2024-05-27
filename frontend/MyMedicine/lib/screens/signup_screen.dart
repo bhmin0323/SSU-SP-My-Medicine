@@ -96,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     "꽃가루",
   ];
 
-  bool showOtherTextField = true; // Display text field initially
+  bool showOtherTextField = true;
   TextEditingController otherAllergyController = TextEditingController();
 
   @override
@@ -145,9 +145,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          // Save the input when sign up button is pressed
                           saveInput();
-                          // Perform signup with selected allergies
                           signUp(context);
                         },
                         style: ElevatedButton.styleFrom(

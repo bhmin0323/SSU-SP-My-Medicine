@@ -7,9 +7,15 @@ import 'package:medicineapp/models/prescription_list_model.dart';
 import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/models/user_model.dart';
 import 'package:medicineapp/widgets/toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiService {
   static const String baseUrl = '43.200.168.39:8080';
+// GoogleSignIn 인스턴스 생성
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email'],
+  );
 
 //핑
   Future<int> pingServer() async {
@@ -22,23 +28,95 @@ class ApiService {
     return response.statusCode;
   }
 
-  // 회원가입
-  Future<int> signUp(String username, String password, List allergyInfo) async {
-    final url = Uri.http(baseUrl, '/signup');
-    final Map<String, dynamic> userData = {
-      "username": username,
-      "password": password,
-      "allergicList": allergyInfo,
-    };
-
+//로그인
+  // Future<int> login(String loginId, String password) async {
+  //   final url = Uri.http(baseUrl, '/login');
+  //   final Map<String, dynamic> loginData = {
+  //     "username": loginId,
+  //     "password": password
+  //   };
+  //   final response = await http.post(
+  //     url,
+  //     body: jsonEncode(loginData),
+  //     headers: {'Content-Type': 'application/json'},
+  //   );
+  //   log("/login: REQ: $url");
+  //   log("/login: <${response.statusCode}>, <${response.body}>");
+  //   if (response.statusCode == 200) {
+  //     return int.parse(response.body);
+  //   } else if (response.statusCode == 401 || response.statusCode == 409) {
+  //     log('Server Response : ${response.statusCode}');
+  //     return -response.statusCode;
+  //   } else {
+  //     log('Server Response : ${response.statusCode}');
+  //     return -1;
+  //   }
+  // }
+  Future<int> login(String username, String password) async {
     final response = await http.post(
-      url,
-      body: jsonEncode(userData),
-      headers: {'Content-Type': 'application/json'},
+      Uri.parse('$baseUrl/login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }),
     );
 
-    log("/signup: REQ: $userData");
-    log("/signup: <${response.statusCode}>, <${response.body}>");
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      await _saveTokens(data['access'], data['refresh']);
+      return data['uid'];
+    } else if (response.statusCode == 401) {
+      return -401;
+    } else if (response.statusCode == 409) {
+      return -409;
+    } else {
+      return -1;
+    }
+  }
+
+  // 회원가입
+  // Future<int> signUp(String username, String password, List allergyInfo) async {
+  //   final url = Uri.http(baseUrl, '/signup');
+  //   final Map<String, dynamic> userData = {
+  //     "username": username,
+  //     "password": password,
+  //     "allergicList": allergyInfo,
+  //   };
+
+  //   final response = await http.post(
+  //     url,
+  //     body: jsonEncode(userData),
+  //     headers: {'Content-Type': 'application/json'},
+  //   );
+
+  //   log("/signup: REQ: $userData");
+  //   log("/signup: <${response.statusCode}>, <${response.body}>");
+
+  //   if (response.statusCode == 200) {
+  //     return 200;
+  //   } else if (response.statusCode == 409) {
+  //     return -409;
+  //   } else {
+  //     return -1;
+  //   }
+  // }
+
+  Future<int> signUp(
+      String username, String password, List<String> allergies) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/signup'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'username': username,
+        'password': password,
+        'allergies': allergies,
+      }),
+    );
 
     if (response.statusCode == 200) {
       return 200;
@@ -49,30 +127,96 @@ class ApiService {
     }
   }
 
-//로그인
-  Future<int> login(String loginId, String password) async {
-    final url = Uri.http(baseUrl, '/login');
-    final Map<String, dynamic> loginData = {
-      "username": loginId,
-      "password": password
-    };
-    final response = await http.post(
-      url,
-      body: jsonEncode(loginData),
-      headers: {'Content-Type': 'application/json'},
-    );
-    log("/login: REQ: $url");
-    log("/login: <${response.statusCode}>, <${response.body}>");
-    if (response.statusCode == 200) {
-      return int.parse(response.body);
-    } else if (response.statusCode == 401 || response.statusCode == 409) {
-      log('Server Response : ${response.statusCode}');
-      return -response.statusCode;
-    } else {
-      log('Server Response : ${response.statusCode}');
-      return -1;
+////////////////////////////////////////////////////////////////////////////////
+  Future<void> googleLogin() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        throw Exception('Google sign in was aborted.');
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/oauth2/authorization/google'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'idToken': googleAuth.idToken!,
+          'accessToken': googleAuth.accessToken!,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        await _saveTokens(data['access'], data['refresh']);
+      } else {
+        throw Exception('Failed to login with Google');
+      }
+    } catch (e) {
+      throw Exception('Failed to login with Google: $e');
     }
   }
+
+  Future<void> reissueToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString('refresh_token');
+
+    if (refreshToken == null) {
+      throw Exception('Refresh token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/reissue'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'refresh': refreshToken,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      await _saveTokens(data['access'], data['refresh']);
+    } else {
+      throw Exception('Failed to reissue token');
+    }
+  }
+
+  Future<void> _saveTokens(String accessToken, String refreshToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('access_token', accessToken);
+    prefs.setString('refresh_token', refreshToken);
+  }
+
+  Future<http.Response> authenticatedRequest(String endpoint,
+      {Map<String, String>? headers, dynamic body}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('access_token');
+    if (accessToken == null) {
+      throw Exception('Access token not found');
+    }
+
+    headers ??= {};
+    headers['Authorization'] = 'Bearer $accessToken';
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: headers,
+      body: body != null ? jsonEncode(body) : null,
+    );
+
+    if (response.statusCode == 401) {
+      await reissueToken();
+      return authenticatedRequest(endpoint, headers: headers, body: body);
+    }
+
+    return response;
+  }
+////////////////////////////////////////////////////////////////////////////////
 
 //유저정보 조회
   Future<UserModel> getUserInfo(int uid) async {
