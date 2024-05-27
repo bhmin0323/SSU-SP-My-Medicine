@@ -9,9 +9,16 @@ import 'package:medicineapp/models/user_model.dart';
 import 'package:medicineapp/widgets/toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'dart:io';
 
 class ApiService {
-  static const String baseUrl = 'http://43.200.168.39:8080';
+  static const String baseUrl = '43.200.168.39:8080';
+  late http.Client httpClient;
+  ApiService() {
+    httpClient = http.Client();
+  }
+  //access 토큰
+  late String accessHeaderValue;
 
   // GoogleSignIn 인스턴스 생성
   final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -29,32 +36,37 @@ class ApiService {
     return response.statusCode;
   }
 
-  // 로그인
-  Future<int> login(String username, String password) async {
+  //로그인
+  Future<int> login(String loginId, String password) async {
+    final url = Uri.http(baseUrl, '/login');
+    final Map<String, dynamic> loginData = {
+      "username": loginId,
+      "password": password
+    };
     final response = await http.post(
-      Uri.parse('$baseUrl/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': username,
-        'password': password,
-      }),
+      url,
+      body: jsonEncode(loginData),
+      headers: {'Content-Type': 'application/json'},
     );
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      await _saveTokens(data['access'], data['refresh']);
-      return data['uid'];
-    } else if (response.statusCode == 401) {
-      return -401;
-    } else if (response.statusCode == 409) {
-      return -409;
+    log("${loginData}");
+    log("/login: REQ: $url");
+    log("/login: <${response.statusCode}>, <${response.headers}>");
+    if (response.statusCode == 200 || response.statusCode == 404) {
+      accessHeaderValue = response.headers['access']!;
+      String uID = response.headers['uid']!;
+      log("accesstoken:${accessHeaderValue}");
+      log("uID:${uID}");
+      return int.parse(uID);
+    } else if (response.statusCode == 401 || response.statusCode == 409) {
+      log('Server Response : ${response.statusCode}');
+      return -response.statusCode;
     } else {
+      log('Server Response : ${response.statusCode}');
       return -1;
     }
   }
 
+  //회원가입
   Future<int> signUp(
       String username, String password, List<String> allergies) async {
     final response = await http.post(
@@ -93,6 +105,8 @@ class ApiService {
         Uri.parse('$baseUrl/oauth2/authorization/google'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'access': '', // 액세스 토큰은 로컬 스토리지에서 가져올 것이므로 초기값은 빈 문자열
+          HttpHeaders.cookieHeader: '', // 쿠키 헤더는 리프레시 토큰을 넣어주어야 함
         },
         body: jsonEncode(<String, String>{
           'idToken': googleAuth.idToken!,
@@ -114,7 +128,7 @@ class ApiService {
   // 토큰 재발급
   Future<void> reissueToken() async {
     final prefs = await SharedPreferences.getInstance();
-    final refreshToken = prefs.getString('refresh_token');
+    final refreshToken = prefs.getString('refresh');
 
     if (refreshToken == null) {
       throw Exception('Refresh token not found');
@@ -124,6 +138,7 @@ class ApiService {
       Uri.parse('$baseUrl/reissue'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.cookieHeader: refreshToken, // 쿠키 헤더에 리프레시 토큰 추가
       },
       body: jsonEncode(<String, String>{
         'refresh': refreshToken,
@@ -141,15 +156,15 @@ class ApiService {
   // 토큰 저장
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('access_token', accessToken);
-    prefs.setString('refresh_token', refreshToken);
+    prefs.setString('access', accessToken);
+    prefs.setString('refresh', refreshToken);
   }
 
   // 인증된 요청
   Future<http.Response> authenticatedRequest(String endpoint,
       {Map<String, String>? headers, dynamic body}) async {
     final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    final accessToken = prefs.getString('access');
     if (accessToken == null) {
       throw Exception('Access token not found');
     }
@@ -174,7 +189,10 @@ class ApiService {
   // 사용자 정보 조회
   Future<UserModel> getUserInfo(int uid) async {
     final url = Uri.http(baseUrl, '/getUserInfo', {'uID': '$uid'});
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {'access': accessHeaderValue},
+    );
     log("/getUserInfo: <${response.statusCode}>, <${response.body}>");
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData =
@@ -188,7 +206,10 @@ class ApiService {
   // 처방전 리스트 조회
   Future<PrescListModel> getPrescList(int uid) async {
     final url = Uri.http(baseUrl, '/getPrescList', {'uID': '$uid'});
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {'access': accessHeaderValue},
+    );
     log("/getPrescList: <${response.statusCode}>, <${response.body}>");
     if (response.statusCode == 200) {
       final resData = jsonDecode(response.body);
@@ -203,7 +224,10 @@ class ApiService {
   // 처방전 세부 조회
   Future<PrescModel> getPrescInfo(int prescId) async {
     final url = Uri.http(baseUrl, '/getPrescInfo', {'pID': '$prescId'});
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {'access': accessHeaderValue},
+    );
     log("/getPrescInfo: <${response.statusCode}>, <${utf8.decode(response.bodyBytes)}>");
     if (response.statusCode == 200) {
       final resData = jsonDecode(utf8.decode(response.bodyBytes));
@@ -219,7 +243,10 @@ class ApiService {
   // 처방전 이미지 조회
   Future<Uint8List> getPrescPic(int prescId) async {
     final url = Uri.http(baseUrl, '/getPrescPic', {'pID': '$prescId'});
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {'access': accessHeaderValue},
+    );
     log("/getPrescPic: <${response.statusCode}>, ${response.body.length}");
     if (response.statusCode == 200) {
       Uint8List resData = base64Decode(response.body);
@@ -227,13 +254,12 @@ class ApiService {
     }
     log("getPrescPic Error: ${response.statusCode}");
     return Uint8List(0);
-    throw Error();
   }
 
   // 이미지 업로드
   Future<int> uploadImage(int uid, String regDate, int duration,
       List<String> medList, Uint8List image) async {
-    final url = Uri.parse('$baseUrl/newPresc');
+    final url = Uri.http(baseUrl, '/newPresc');
 
     var request = http.MultipartRequest('POST', url);
 
@@ -247,6 +273,7 @@ class ApiService {
     request.fields['regDate'] = regDate;
     request.fields['duration'] = duration.toString();
     request.fields['medList'] = medList.join(',');
+    request.headers['access'] = accessHeaderValue;
     var response = await request.send();
     log(" Error: ${response.statusCode}");
     if (response.statusCode == 200) {
@@ -262,7 +289,10 @@ class ApiService {
   Future<void> deletePrescription(int prescriptionId) async {
     try {
       final url = Uri.http(baseUrl, '/delPresc', {'pID': '$prescriptionId'});
-      final response = await http.delete(url);
+      final response = await http.delete(
+        url,
+        headers: {'access': accessHeaderValue},
+      );
       if (response.statusCode == 200) {
         log("처방전이 성공적으로 삭제되었습니다.");
         return;
