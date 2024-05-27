@@ -12,12 +12,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiService {
   static const String baseUrl = 'http://43.200.168.39:8080';
-// GoogleSignIn 인스턴스 생성
+
+  // GoogleSignIn 인스턴스 생성
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email'],
   );
 
-//핑
+  // 핑
   Future<int> pingServer() async {
     final url = Uri.http(baseUrl, '/status');
     final response = await http.get(url);
@@ -28,30 +29,7 @@ class ApiService {
     return response.statusCode;
   }
 
-//로그인
-  // Future<int> login(String loginId, String password) async {
-  //   final url = Uri.http(baseUrl, '/login');
-  //   final Map<String, dynamic> loginData = {
-  //     "username": loginId,
-  //     "password": password
-  //   };
-  //   final response = await http.post(
-  //     url,
-  //     body: jsonEncode(loginData),
-  //     headers: {'Content-Type': 'application/json'},
-  //   );
-  //   log("/login: REQ: $url");
-  //   log("/login: <${response.statusCode}>, <${response.body}>");
-  //   if (response.statusCode == 200) {
-  //     return int.parse(response.body);
-  //   } else if (response.statusCode == 401 || response.statusCode == 409) {
-  //     log('Server Response : ${response.statusCode}');
-  //     return -response.statusCode;
-  //   } else {
-  //     log('Server Response : ${response.statusCode}');
-  //     return -1;
-  //   }
-  // }
+  // 로그인
   Future<int> login(String username, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
@@ -77,33 +55,6 @@ class ApiService {
     }
   }
 
-  // 회원가입
-  // Future<int> signUp(String username, String password, List allergyInfo) async {
-  //   final url = Uri.http(baseUrl, '/signup');
-  //   final Map<String, dynamic> userData = {
-  //     "username": username,
-  //     "password": password,
-  //     "allergicList": allergyInfo,
-  //   };
-
-  //   final response = await http.post(
-  //     url,
-  //     body: jsonEncode(userData),
-  //     headers: {'Content-Type': 'application/json'},
-  //   );
-
-  //   log("/signup: REQ: $userData");
-  //   log("/signup: <${response.statusCode}>, <${response.body}>");
-
-  //   if (response.statusCode == 200) {
-  //     return 200;
-  //   } else if (response.statusCode == 409) {
-  //     return -409;
-  //   } else {
-  //     return -1;
-  //   }
-  // }
-
   Future<int> signUp(
       String username, String password, List<String> allergies) async {
     final response = await http.post(
@@ -127,7 +78,7 @@ class ApiService {
     }
   }
 
-////////////////////////////////////////////////////////////////////////////////
+  // Google 로그인
   Future<void> googleLogin() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -160,6 +111,7 @@ class ApiService {
     }
   }
 
+  // 토큰 재발급
   Future<void> reissueToken() async {
     final prefs = await SharedPreferences.getInstance();
     final refreshToken = prefs.getString('refresh_token');
@@ -186,12 +138,14 @@ class ApiService {
     }
   }
 
+  // 토큰 저장
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('access_token', accessToken);
     prefs.setString('refresh_token', refreshToken);
   }
 
+  // 인증된 요청
   Future<http.Response> authenticatedRequest(String endpoint,
       {Map<String, String>? headers, dynamic body}) async {
     final prefs = await SharedPreferences.getInstance();
@@ -216,9 +170,8 @@ class ApiService {
 
     return response;
   }
-////////////////////////////////////////////////////////////////////////////////
 
-//유저정보 조회
+  // 사용자 정보 조회
   Future<UserModel> getUserInfo(int uid) async {
     final url = Uri.http(baseUrl, '/getUserInfo', {'uID': '$uid'});
     final response = await http.get(url);
@@ -232,7 +185,7 @@ class ApiService {
     throw Exception('Failed to load user information');
   }
 
-//처방전 리스트 조회
+  // 처방전 리스트 조회
   Future<PrescListModel> getPrescList(int uid) async {
     final url = Uri.http(baseUrl, '/getPrescList', {'uID': '$uid'});
     final response = await http.get(url);
@@ -247,7 +200,7 @@ class ApiService {
     throw Error();
   }
 
-//처방전 세부 조회
+  // 처방전 세부 조회
   Future<PrescModel> getPrescInfo(int prescId) async {
     final url = Uri.http(baseUrl, '/getPrescInfo', {'pID': '$prescId'});
     final response = await http.get(url);
@@ -263,27 +216,24 @@ class ApiService {
     throw Error();
   }
 
-//처방전 이미지 get
+  // 처방전 이미지 조회
   Future<Uint8List> getPrescPic(int prescId) async {
     final url = Uri.http(baseUrl, '/getPrescPic', {'pID': '$prescId'});
     final response = await http.get(url);
-    // log("/getPrescPic: <${response.statusCode}>, <${response.body}>");
     log("/getPrescPic: <${response.statusCode}>, ${response.body.length}");
     if (response.statusCode == 200) {
       Uint8List resData = base64Decode(response.body);
-      // final resData = response.body;
       return resData;
     }
     log("getPrescPic Error: ${response.statusCode}");
-    //이미지 없을 경우
     return Uint8List(0);
     throw Error();
   }
 
-// 이미지 업로드
+  // 이미지 업로드
   Future<int> uploadImage(int uid, String regDate, int duration,
       List<String> medList, Uint8List image) async {
-    final url = Uri.parse('http://43.200.168.39:8080/newPresc');
+    final url = Uri.parse('$baseUrl/newPresc');
 
     var request = http.MultipartRequest('POST', url);
 
@@ -308,7 +258,7 @@ class ApiService {
     }
   }
 
-  // 처방건 삭제
+  // 처방전 삭제
   Future<void> deletePrescription(int prescriptionId) async {
     try {
       final url = Uri.http(baseUrl, '/delPresc', {'pID': '$prescriptionId'});
