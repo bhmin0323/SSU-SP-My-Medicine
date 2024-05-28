@@ -196,6 +196,7 @@ class _BuildPrescWidget extends StatelessWidget {
                             ),
                           );
                         } else {
+                          log('snapshot []');
                           return Text('No Image Available');
                         }
                       } else {

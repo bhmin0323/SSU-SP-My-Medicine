@@ -263,17 +263,20 @@ class ApiService {
       url,
       headers: {'access': accessHeaderValue},
     );
-
+    log('/getimage api body1: ${response.body}');
+    log('/getimage api reponse: ${response.statusCode}');
     if (response.statusCode == 200) {
       try {
+        log('decode try');
         Uint8List resData = base64Decode(response.body);
+        log('/getimage api body: success');
         return resData;
       } catch (e) {
-        print('Error decoding image: $e');
+        log('Error decoding image: $e');
         return Uint8List(0);
       }
     } else {
-      print("Failed to fetch image, status code: ${response.statusCode}");
+      log("Failed to fetch image, status code: ${response.statusCode}");
       return Uint8List(0);
     }
   }
