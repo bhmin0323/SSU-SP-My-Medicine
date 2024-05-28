@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/services/api_services.dart';
@@ -45,6 +46,10 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
     String url = "http://43.200.168.39:8080/getPrescPic?pID=$prescId";
     log("getPrescPicLink: $url");
     return url;
+  }
+
+  Future<Uint8List> prescImage(int prescId) {
+    return _apiService.getPrescPic(prescId);
   }
 
   void _showWarningDialog(BuildContext context) {
@@ -121,8 +126,8 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
           duration: Duration(seconds: 2),
         ),
       );
-      // Navigator.of(context)
-      //     .pushNamedAndRemoveUntil('/prescList', (route) => false);
+      widget.onDeleted();
+      Navigator.of(context).pop(); // 삭제 후 화면을 닫거나 다른 동작 수행
     } catch (e) {
       _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
@@ -177,11 +182,6 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
                                   _deletePrescription(
                                       context, widget.prescModel.prescIdValue);
                                   Navigator.of(context).pop();
-                                  // if (_isDeleting = true) {
-                                  //   Navigator.of(context)
-                                  //       .pushNamedAndRemoveUntil(
-                                  //           '/prescList', (route) => false);
-                                  // }
                                 },
                                 child: const Text("삭제"),
                               ),
@@ -267,17 +267,49 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Container(
-                    foregroundDecoration: BoxDecoration(
-                      color: widget.prescModel.isExpired
-                          ? Colors.grey[300]
-                          : Colors.white,
-                      backgroundBlendMode: BlendMode.darken,
-                    ),
-                    child: Image.network(
-                      _getPrescPicLink(widget.prescModel.prescIdValue),
-                      height: MediaQuery.of(context).size.height * 0.35,
-                    ),
+                  child: FutureBuilder<Uint8List>(
+                    future: ApiService()
+                        .getPrescPic(widget.prescModel.prescIdValue),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('이미지를 불러오는데 오류가 발생했습니다.'));
+                      } else if (snapshot.hasData) {
+                        Uint8List? imageData = snapshot.data as Uint8List;
+                        if (imageData != null && imageData.isNotEmpty) {
+                          return Container(
+                            width: 100,
+                            clipBehavior: Clip.hardEdge,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Image.memory(
+                              imageData,
+                              fit: BoxFit.cover,
+                            ),
+                            // foregroundDecoration: BoxDecoration(
+                            //   color: widget.prescModel.isExpired
+                            //       ? Colors.grey[300]
+                            //       : Colors.white,
+                            //   backgroundBlendMode: BlendMode.darken,
+                            // ),
+                            // child: Image.memory(
+                            //   snapshot.data!,
+                            //   height: MediaQuery.of(context).size.height * 0.35,
+                            //   fit: BoxFit.cover,
+                            // ),
+                          );
+                        } else {
+                          log('snapshot []');
+                          return Text('No Image Available');
+                        }
+                      } else {
+                        return Center(child: Text('이미지를 불러올 수 없습니다.'));
+                      }
+                    },
                   ),
                 ),
                 SizedBox(

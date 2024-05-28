@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
 import 'package:medicineapp/models/user_model.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class UserInfoScreen extends StatefulWidget {
   final int uid;
@@ -30,7 +32,31 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Page'),
+        title: Container(
+          padding: const EdgeInsets.only(
+            bottom: 1,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () => {
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: PrescListScreen(uid: widget.uid, func: widget.func),
+                  )
+                },
+                icon: Icon(Icons.arrow_back_sharp, color: Colors.grey[600]),
+              ),
+              const Text('My Page'),
+              const SizedBox(width: 30, height: 1),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 5,
+        shadowColor: Colors.grey[300],
       ),
       body: FutureBuilder<UserModel>(
         future: _userInfoFuture,

@@ -263,12 +263,12 @@ class ApiService {
       url,
       headers: {'access': accessHeaderValue},
     );
-    log('/getimage api body1: ${response.body}');
     log('/getimage api reponse: ${response.statusCode}');
     if (response.statusCode == 200) {
       try {
         log('decode try');
-        Uint8List resData = base64Decode(response.body);
+        // Uint8List resData = base64Decode(response.body);\
+        Uint8List resData = response.bodyBytes;
         log('/getimage api body: success');
         return resData;
       } catch (e) {

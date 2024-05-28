@@ -171,17 +171,13 @@ class _BuildPrescWidget extends StatelessWidget {
                   FutureBuilder(
                     future: ApiService().getPrescPic(prescId),
                     builder: (context, snapshot) {
-                      log('image snapshot: ${snapshot}');
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        log('1');
                         return Center(
                           child: CircularProgressIndicator(),
                         );
                       } else if (snapshot.hasError) {
-                        log('2');
                         return Text('Error: ${snapshot.error}');
                       } else if (snapshot.hasData) {
-                        log('3');
                         Uint8List? imageData = snapshot.data as Uint8List?;
                         if (imageData != null && imageData.isNotEmpty) {
                           return Container(
