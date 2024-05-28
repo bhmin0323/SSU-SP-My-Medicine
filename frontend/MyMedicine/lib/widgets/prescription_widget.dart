@@ -8,11 +8,13 @@ import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/models/user_model.dart';
 import 'package:medicineapp/screens/presc_detail_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
+import 'package:medicineapp/screens/home_screen.dart';
 
 // ignore: must_be_immutable
 class PrescWidget extends StatelessWidget {
   final int index, uid, prescId;
   final VoidCallback onDeleted; // onDeleted 매개변수 추가
+  final Function func;
 
   PrescWidget({
     super.key,
@@ -20,6 +22,7 @@ class PrescWidget extends StatelessWidget {
     required this.prescId,
     required this.uid,
     required this.onDeleted, // onDeleted 매개변수 추가
+    required this.func,
   });
 
   final ApiService apiService = ApiService();
@@ -64,6 +67,8 @@ class PrescWidget extends StatelessWidget {
                 context: context,
                 prescModel: prescModel,
                 onDeleted: onDeleted,
+                uid: uid,
+                func: func,
               ),
             );
           } else {
@@ -78,6 +83,8 @@ class PrescWidget extends StatelessWidget {
                 context: context,
                 prescModel: prescModel,
                 onDeleted: onDeleted,
+                uid: uid,
+                func: func,
               ),
             );
           }
@@ -92,6 +99,8 @@ class _BuildPrescWidget extends StatelessWidget {
   final BuildContext context;
   final PrescModel prescModel;
   final VoidCallback onDeleted;
+  final int uid;
+  final Function func;
 
   const _BuildPrescWidget({
     // super.key,
@@ -99,6 +108,8 @@ class _BuildPrescWidget extends StatelessWidget {
     required this.prescModel,
     required this.prescId,
     required this.onDeleted,
+    required this.uid,
+    required this.func,
   });
 
   // String _getPrescPicLink(int prescId) {
@@ -119,11 +130,13 @@ class _BuildPrescWidget extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => PrescDetailScreen(
+              uid: uid,
               prescModel: prescModel,
               // onDeleted: onDeleted,
               onDeleted: () {
                 Navigator.popUntil(context, ModalRoute.withName('/prescList'));
               },
+              func: func,
             ),
           ),
         );

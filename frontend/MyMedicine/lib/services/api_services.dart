@@ -232,6 +232,8 @@ class ApiService {
       final resData = jsonDecode(response.body);
       final prescData = PrescListModel.fromJson(resData);
       return prescData;
+    } else if (response.statusCode == 404) {
+      return await getPrescList(uid);
     }
     log("getPrescList api Error: ${response.statusCode}");
     throw Error();
@@ -306,10 +308,17 @@ class ApiService {
     log('/uploadImage api: ${request.headers}');
     var response = await request.send();
     log("/uploadImage api statusCode: ${response.statusCode}");
+    log('/uploadImage api body: ${response.stream}');
     if (response.statusCode == 200) {
-      final respStr = await response.stream.bytesToString();
-      final pID = int.parse(respStr.trim());
-      return pID;
+      try {
+        final respStr = await response.stream.bytesToString();
+        log('${respStr.trim()}');
+        final pID = int.parse(respStr.trim());
+        return pID;
+      } catch (e) {
+        log("/upload reponse parsing error: $e");
+        return -1;
+      }
     } else {
       return -1;
     }

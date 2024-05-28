@@ -74,24 +74,43 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
   }
 
   void _pickImage() async {
-    final pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    setState(() {
-      _image = pickedFile;
-    });
+    try {
+      final pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      setState(() {
+        _image = pickedFile;
+      });
+    } catch (e) {
+      log("Image picking failed: $e");
+      // 이미지를 다시 업로드하기 위해 재귀 호출
+      _pickImage(); // 재귀 호출
+    }
   }
 
   void validateAndSubmit(BuildContext context) async {
     String medicineList = _fetchMedicineList();
-    if (_prescDaysController.text.isEmpty) {
-      showToast("복용일수를 입력해주세요");
+
+    bool isInteger(String value) {
+      if (value == null) {
+        return false;
+      }
+      final number = int.tryParse(value);
+      return number != null;
+    }
+
+    if (_prescDaysController.text.isEmpty ||
+        !isInteger(_prescDaysController.text)) {
+      showToast("복용일수를 올바르게 입력해주세요");
       return;
     }
     if (_regYearController.text.isEmpty ||
         _regMonthController.text.isEmpty ||
-        _regDateController.text.isEmpty) {
-      showToast("처방일자를 모두 입력해주세요");
+        _regDateController.text.isEmpty ||
+        !isInteger(_regYearController.text) ||
+        !isInteger(_regMonthController.text) ||
+        !isInteger(_regDateController.text)) {
+      showToast("처방일자를 올바르게 입력해주세요");
       return;
     }
     if (medicineList.isEmpty) {
@@ -122,13 +141,17 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
       showToast("처방전이 등록되었습니다.");
       widget.func(context);
       _clearInputs();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              PrescListScreen(uid: widget.uid, func: widget.func),
-        ),
-      );
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PrescListScreen(
+              uid: widget.uid,
+              func: widget.func,
+            ),
+          ),
+        );
+      });
     }
   }
 
@@ -175,15 +198,6 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () => {
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: PrescListScreen(uid: widget.uid, func: widget.func),
-                  )
-                },
-                icon: Icon(Icons.arrow_back_sharp, color: Colors.grey[600]),
-              ),
               const Text('처방전 업로드'),
               const SizedBox(width: 30, height: 1),
             ],

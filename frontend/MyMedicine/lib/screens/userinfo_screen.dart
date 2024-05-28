@@ -40,15 +40,18 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () => {
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: PrescListScreen(uid: widget.uid, func: widget.func),
-                  )
-                },
-                icon: Icon(Icons.arrow_back_sharp, color: Colors.grey[600]),
-              ),
+              // IconButton(
+              //   onPressed: () {
+              //     Navigator.pushReplacement(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) =>
+              //             PrescListScreen(uid: widget.uid, func: widget.func),
+              //       ),
+              //     );
+              //   },
+              //   icon: Icon(Icons.arrow_back_sharp, color: Colors.grey[600]),
+              // ),
               const Text('My Page'),
               const SizedBox(width: 30, height: 1),
             ],

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:medicineapp/models/prescription_list_model.dart';
 import 'package:medicineapp/models/user_model.dart';
+import 'package:medicineapp/screens/home_screen.dart';
 import 'package:medicineapp/screens/login_screen.dart';
 import 'package:medicineapp/ui_consts.dart';
 import 'package:medicineapp/services/api_services.dart';
@@ -73,10 +74,14 @@ class _PrescListScreenState extends State<PrescListScreen> {
                       color: Colors.white, size: 32),
                   IconButton(
                     onPressed: () {
-                      Restart.restartApp();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(uid: widget.uid),
+                        ),
+                      );
                     },
-                    icon:
-                        const Icon(Icons.logout, color: Colors.white, size: 32),
+                    icon: const Icon(Icons.home, color: Colors.white, size: 32),
                   ),
                 ],
               ),
@@ -125,7 +130,8 @@ class _PrescListScreenState extends State<PrescListScreen> {
                               uid: widget.uid,
                               prescId: snapshot.data![1].prescIdList[
                                   snapshot.data![1].length - index - 1],
-                              onDeleted: fetchData, // 처방전 삭제 후 데이터 갱신
+                              onDeleted: fetchData,
+                              func: widget.func,
                             );
                           },
                         );
