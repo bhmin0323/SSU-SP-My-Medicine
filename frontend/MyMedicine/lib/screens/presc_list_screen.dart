@@ -77,7 +77,7 @@ class _PrescListScreenState extends State<PrescListScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(uid: widget.uid),
+                          builder: (context) => LoginScreen(),
                         ),
                       );
                     },

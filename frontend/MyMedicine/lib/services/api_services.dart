@@ -259,6 +259,7 @@ class ApiService {
 
   // 처방 사진 가져오기
   Future<Uint8List> getPrescPic(int prescId) async {
+    Future.delayed(const Duration(milliseconds: 990));
     await _initializeAccessToken();
     final url = Uri.http(baseUrl, '/getPrescPic', {'pID': '$prescId'});
     final response = await http.get(

@@ -1,23 +1,25 @@
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:medicineapp/main.dart';
 import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/screens/home_screen.dart';
 import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class PrescDetailScreen extends StatefulWidget {
   final PrescModel prescModel;
-  final VoidCallback onDeleted;
   final int uid;
   final Function func;
+  final VoidCallback onDeleted;
 
   const PrescDetailScreen({
     Key? key,
     required this.prescModel,
-    required this.onDeleted,
     required this.uid,
     required this.func,
+    required this.onDeleted,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,7 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
   }
 
   void _showWarningDialog(BuildContext context) {
+    if (context == null || _isDeleting) return;
     if (_isDeleting) return;
 
     String warningMessage = '';
@@ -125,12 +128,8 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
           duration: Duration(seconds: 2),
         ),
       );
+
       widget.onDeleted();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(uid: widget.uid),
-        ),
-      );
     } catch (e) {
       _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
@@ -180,19 +179,12 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
                                 },
                                 child: const Text("취소"),
                               ),
+                              //처방건 삭제
                               TextButton(
                                 onPressed: () {
                                   _deletePrescription(
                                       context, widget.prescModel.prescIdValue);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PrescListScreen(
-                                        uid: widget.uid,
-                                        func: widget.func,
-                                      ),
-                                    ),
-                                  );
+                                  Navigator.of(context).pop(context);
                                 },
                                 child: const Text("삭제"),
                               ),

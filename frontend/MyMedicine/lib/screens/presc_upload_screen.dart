@@ -141,17 +141,19 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
       showToast("처방전이 등록되었습니다.");
       widget.func(context);
       _clearInputs();
-      Future.delayed(Duration(seconds: 1), () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PrescListScreen(
-              uid: widget.uid,
-              func: widget.func,
-            ),
+      //홈화면으로 나가기
+      // await Future.delayed(const Duration(seconds: 1));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PrescListScreen(
+            uid: widget.uid,
+            func: widget.func,
           ),
-        );
-      });
+        ),
+      );
+    } else {
+      showToast("처방전 등록에 실패했습니다.");
     }
   }
 

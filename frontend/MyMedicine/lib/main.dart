@@ -17,6 +17,7 @@ class MyWidgetsBinding extends WidgetsFlutterBinding {
   ImageCache createImageCache() => MyImageCache();
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   HttpOverrides.global = MyHttpOverrides();
   MyWidgetsBinding();
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
           ThemeData(primarySwatch: Colors.deepPurple, fontFamily: "NotoSansKR"),
       home: LoginScreen(),
       // home: const TempWidget(),
+      navigatorKey: navigatorKey,
     );
   }
 }

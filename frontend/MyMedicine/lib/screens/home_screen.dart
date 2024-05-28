@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:medicineapp/screens/login_screen.dart';
 import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/screens/presc_upload_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:medicineapp/screens/userinfo_screen.dart';
+import 'dart:developer' as developer;
 
 class HomeScreen extends StatelessWidget {
   final int uid;
@@ -133,6 +136,7 @@ List<PersistentBottomNavBarItem> _navBarsItems(
       inactiveColorPrimary: Colors.grey,
       inactiveColorSecondary: Colors.grey,
       onPressed: (context) {
+        developer.log("Context value: $context");
         Navigator.push(
           context!,
           MaterialPageRoute(
@@ -158,6 +162,7 @@ List<PersistentBottomNavBarItem> _navBarsItems(
       activeColorPrimary: Colors.deepPurple[200]!,
       inactiveColorPrimary: Colors.grey,
       onPressed: (context) {
+        developer.log("Context value: $context");
         Navigator.push(
           context!,
           MaterialPageRoute(

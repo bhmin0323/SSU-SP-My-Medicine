@@ -7,6 +7,7 @@ import 'package:medicineapp/models/prescription_list_model.dart';
 import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/models/user_model.dart';
 import 'package:medicineapp/screens/presc_detail_screen.dart';
+import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
 import 'package:medicineapp/screens/home_screen.dart';
 
@@ -112,29 +113,28 @@ class _BuildPrescWidget extends StatelessWidget {
     required this.func,
   });
 
-  // String _getPrescPicLink(int prescId) {
-  //   // String url = "http://141.164.62.81:5000/getPrescPic?prescId=$prescId";
-  //   String url = "http://43.200.168.39:8080/getPrescPic?pID=$prescId";
-  //   log("getPrescPicLink: $url");
-
-  //   return url;
-  // }
+  void _refreshData() {
+    // 이전 페이지로 돌아간 후 새로고침
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (BuildContext context) => PrescListScreen(uid: uid, func: func),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
     log("is_expired: ${prescModel.isExpired}");
     return GestureDetector(
       onTap: () {
-        // Navigator.pop(context);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PrescDetailScreen(
               uid: uid,
               prescModel: prescModel,
-              // onDeleted: onDeleted,
               onDeleted: () {
-                Navigator.popUntil(context, ModalRoute.withName('/prescList'));
+                log("poppopopopop-p");
+                Navigator.of(context).pop(context);
+                _refreshData();
               },
               func: func,
             ),
