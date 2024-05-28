@@ -23,7 +23,7 @@ class ApiService {
     httpClient = http.Client();
   }
 
-  // 액세스 토큰 초기화
+// 액세스 토큰 초기화
   Future<void> _initializeAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     accessHeaderValue = prefs.getString('access') ?? '';
@@ -47,7 +47,7 @@ class ApiService {
     return response.statusCode;
   }
 
-  // 로그인
+// 로그인
   Future<int> login(String loginId, String password) async {
     final url = Uri.http(baseUrl, '/login');
     final Map<String, dynamic> loginData = {
@@ -68,6 +68,7 @@ class ApiService {
       log("/login api: accesstoken:${accessHeaderValue}");
       log("/login api: uID:${uID}");
       await _saveTokens(response.headers['set-cookie']!);
+      await _saveAccessToken(accessHeaderValue); // Access 토큰 저장
       return int.parse(uID);
     } else if (response.statusCode == 401 || response.statusCode == 409) {
       log('/login api: Server Response : ${response.statusCode}');
@@ -166,10 +167,16 @@ class ApiService {
     }
   }
 
-  // 토큰 저장
+// 토큰 저장
   Future<void> _saveTokens(String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('refresh', refreshToken);
+  }
+
+// 액세스 토큰 저장
+  Future<void> _saveAccessToken(String accessToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access', accessToken);
   }
 
   // 인증된 요청
@@ -256,13 +263,19 @@ class ApiService {
       url,
       headers: {'access': accessHeaderValue},
     );
-    log("/getPrescPic api: <${response.statusCode}>, ${response.body.length}");
+
     if (response.statusCode == 200) {
-      Uint8List resData = base64Decode(response.body);
-      return resData;
+      try {
+        Uint8List resData = base64Decode(response.body);
+        return resData;
+      } catch (e) {
+        print('Error decoding image: $e');
+        return Uint8List(0);
+      }
+    } else {
+      print("Failed to fetch image, status code: ${response.statusCode}");
+      return Uint8List(0);
     }
-    log("getPrescPic api Error: ${response.statusCode}");
-    return Uint8List(0);
   }
 
   // 이미지 업로드

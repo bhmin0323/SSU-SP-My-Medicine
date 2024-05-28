@@ -101,13 +101,13 @@ class _BuildPrescWidget extends StatelessWidget {
     required this.onDeleted,
   });
 
-  String _getPrescPicLink(int prescId) {
-    // String url = "http://141.164.62.81:5000/getPrescPic?prescId=$prescId";
-    String url = "http://43.200.168.39:8080/getPrescPic?pID=$prescId";
-    log("getPrescPicLink: $url");
+  // String _getPrescPicLink(int prescId) {
+  //   // String url = "http://141.164.62.81:5000/getPrescPic?prescId=$prescId";
+  //   String url = "http://43.200.168.39:8080/getPrescPic?pID=$prescId";
+  //   log("getPrescPicLink: $url");
 
-    return url;
-  }
+  //   return url;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -168,24 +168,60 @@ class _BuildPrescWidget extends StatelessWidget {
                         ),
                     ],
                   ),
-                  Container(
-                      width: 100,
-                      clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Container(
-                          foregroundDecoration: BoxDecoration(
-                            color: prescModel.isExpired
-                                ? Colors.grey[400]
-                                : Colors.white,
-                            backgroundBlendMode: BlendMode.darken,
-                          ),
-                          child: Image(
-                            image: NetworkImage(
-                              _getPrescPicLink(prescId),
+                  FutureBuilder(
+                    future: ApiService().getPrescPic(prescId),
+                    builder: (context, snapshot) {
+                      log('image snapshot: ${snapshot}');
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        log('1');
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        log('2');
+                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.hasData) {
+                        log('3');
+                        Uint8List? imageData = snapshot.data as Uint8List?;
+                        if (imageData != null && imageData.isNotEmpty) {
+                          return Container(
+                            width: 100,
+                            clipBehavior: Clip.hardEdge,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ))),
+                            child: Image.memory(
+                              imageData,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        } else {
+                          return Text('No Image Available');
+                        }
+                      } else {
+                        return Text('No Image Available');
+                      }
+                    },
+                  ),
+                  // Container(
+                  //     width: 100,
+                  //     clipBehavior: Clip.hardEdge,
+                  //     decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(12),
+                  //     ),
+                  //     child: Container(
+                  //       foregroundDecoration: BoxDecoration(
+                  //         color: prescModel.isExpired
+                  //             ? Colors.grey[400]
+                  //             : Colors.white,
+                  //         backgroundBlendMode: BlendMode.darken,
+                  //       ),
+                  //       child: Image(
+                  //         image: NetworkImage(
+                  //           prescImage,
+                  //         ),
+                  //       ),
+                  //     )),
                 ],
               ),
             ],
