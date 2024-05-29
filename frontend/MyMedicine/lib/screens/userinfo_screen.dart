@@ -21,6 +21,16 @@ class UserInfoScreen extends StatefulWidget {
 class _UserInfoScreenState extends State<UserInfoScreen> {
   late Future<UserModel> _userInfoFuture;
   final ApiService _apiService = ApiService();
+  List<String> selectedAllergies = [];
+  List<String> allAllergies = [
+    "페니실린",
+    "집먼지진드기",
+    "계란",
+    "우유",
+    "복숭아",
+    "견과류",
+    "꽃가루",
+  ];
 
   @override
   void initState() {
@@ -32,34 +42,24 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
-          padding: const EdgeInsets.only(
-            bottom: 1,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // IconButton(
-              //   onPressed: () {
-              //     Navigator.pushReplacement(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) =>
-              //             PrescListScreen(uid: widget.uid, func: widget.func),
-              //       ),
-              //     );
-              //   },
-              //   icon: Icon(Icons.arrow_back_sharp, color: Colors.grey[600]),
-              // ),
-              const Text('My Page'),
-              const SizedBox(width: 30, height: 1),
-            ],
-          ),
-        ),
+        title: Text('My Page'),
         backgroundColor: Colors.white,
         elevation: 5,
         shadowColor: Colors.grey[300],
+        actions: [
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.pushReplacement(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) =>
+          //             PrescListScreen(uid: widget.uid, func: widget.func),
+          //       ),
+          //     );
+          //   },
+          //   icon: Icon(Icons.arrow_back_sharp, color: Colors.grey[600]),
+          // ),
+        ],
       ),
       body: FutureBuilder<UserModel>(
         future: _userInfoFuture,
@@ -74,16 +74,25 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             );
           } else {
             final user = snapshot.data!;
-            return Center(
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('User ID: ${user.uID}'),
+                  Text(
+                    '알러지 정보:',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
                   SizedBox(height: 10),
-                  Text('Allergies:'),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: user.allergic.map((allergic) {
-                      return Text('${allergic.info}');
+                      return Text(
+                        '${allergic.info}',
+                        style: TextStyle(fontSize: 16),
+                      );
                     }).toList(),
                   ),
                 ],

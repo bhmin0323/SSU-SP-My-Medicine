@@ -191,6 +191,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String username = usernameController.text;
     String password = passwordController.text;
 
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("아이디와 비밀번호를 입력해 주세요.")),
+      );
+      return;
+    }
     int signUpResult =
         await _apiService.signUp(username, password, selectedAllergies);
 
@@ -198,6 +204,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("회원가입에 성공했습니다.")),
       );
+
+      Navigator.pop(context);
     } else if (signUpResult == -409) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("이미 사용중인 아이디입니다.")),

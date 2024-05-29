@@ -3,7 +3,8 @@ import 'package:medicineapp/screens/home_screen.dart';
 import 'package:medicineapp/screens/signup_screen.dart';
 import 'package:medicineapp/widgets/text_field_set.dart';
 import 'package:medicineapp/services/api_services.dart';
-import 'package:medicineapp/widgets/prescription_widget.dart';
+// import 'package:medicineapp/widgets/prescription_widget.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
@@ -66,7 +67,6 @@ class LoginScreen extends StatelessWidget {
                         // 서버에 로그인 요청 보내기
                         int uid = await _apiService.login(username, password);
                         // int uid = 1;
-                        // 로그인 성공 시 홈 화면으로 이동
                         if (uid == -401) {
                           //비밀번호 불일치
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -81,6 +81,7 @@ class LoginScreen extends StatelessWidget {
                               content: Text('존재하지 않는 아이디입니다.'),
                             ),
                           );
+                          // 로그인 성공 시 홈 화면으로 이동
                         } else if (uid != -1) {
                           Navigator.pushReplacement(
                             context,
@@ -120,48 +121,48 @@ class LoginScreen extends StatelessWidget {
                   ),
 
                   /////////////////////////////////////////////
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          await _apiService.googleLogin();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen(
-                                uid: 0,
-                                func: func,
-                              ), // 소셜 로그인 시 uid 처리 필요
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('구글 로그인을 실패했습니다. 다시 시도해주세요.'),
-                            ),
-                          );
-                        }
-                      },
-                      icon: Image.asset(
-                        'assets/icons/google_icon.png', // 구글 아이콘 경로
-                        width: 50,
-                        height: 50,
-                      ),
-                      label: Text('로 로그인'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        primary: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   height: 50,
+                  //   child: ElevatedButton.icon(
+                  //     onPressed: () async {
+                  //       try {
+                  //         int uid = await _apiService.googleLogin();
+                  //         Navigator.pushReplacement(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //             builder: (context) => HomeScreen(
+                  //               uid: uid,
+                  //               func: func,
+                  //             ), // 소셜 로그인 시 uid 처리 필요
+                  //           ),
+                  //         );
+                  //       } catch (e) {
+                  //         ScaffoldMessenger.of(context).showSnackBar(
+                  //           SnackBar(
+                  //             content: Text('구글 로그인을 실패했습니다. 다시 시도해주세요.'),
+                  //           ),
+                  //         );
+                  //       }
+                  //     },
+                  //     icon: Image.asset(
+                  //       'assets/icons/google_icon.png', // 구글 아이콘 경로
+                  //       width: 50,
+                  //       height: 50,
+                  //     ),
+                  //     label: Text('로 로그인'),
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: Colors.white,
+                  //       primary: Colors.grey,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(15),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
                   /////////////////////////////////////////////
 
                   Row(

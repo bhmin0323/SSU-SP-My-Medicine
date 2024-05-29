@@ -43,6 +43,9 @@ class ApiService {
     log("/status: <${response.statusCode}>, <${response.body}>");
     if (response.statusCode != 204) {
       log('Server Response : ${response.statusCode}');
+    } else if (response.statusCode == 401) {
+      reissueToken;
+      pingServer;
     }
     return response.statusCode;
   }
@@ -65,8 +68,9 @@ class ApiService {
     if (response.statusCode == 200) {
       accessHeaderValue = response.headers['access']!;
       String uID = response.headers['uid']!;
-      log("/login api: accesstoken:${accessHeaderValue}");
+      log("/login api: accesstoken: ${accessHeaderValue}");
       log("/login api: uID:${uID}");
+      log('${response.headers['set-cookie']}');
       await _saveTokens(response.headers['set-cookie']!);
       await _saveAccessToken(accessHeaderValue); // Access 토큰 저장
       return int.parse(uID);
@@ -86,7 +90,7 @@ class ApiService {
     final response = await http.post(
       url,
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, dynamic>{
         'username': username,
@@ -94,7 +98,8 @@ class ApiService {
         'allergies': allergies,
       }),
     );
-
+    log('/signup status: ${response.statusCode}');
+    log('/signup request body: ${allergies}');
     if (response.statusCode == 200) {
       return 200;
     } else if (response.statusCode == 409) {
@@ -103,67 +108,77 @@ class ApiService {
       return -1;
     }
   }
+  //알러지 정보 수정
+  // Future<void> edituser(AllergicInfo)
 
   // 구글 로그인
-  Future<int> googleLogin() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        throw Exception('Google sign in was aborted.');
-      }
+  // Future<int> googleLogin() async {
+  //   try {
+  //     final url = Uri.http(baseUrl, 'oauth2/authorization/google');
+  //     // final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  //     // if (googleUser == null) {
+  //     //   throw Exception('Google sign in was aborted.');
+  //     // }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+  //     // final GoogleSignInAuthentication googleAuth =
+  //     //     await googleUser.authentication;
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/oauth2/authorization/google'),
-        body: jsonEncode(<String, String>{
-          'idToken': googleAuth.idToken!,
-          'accessToken': googleAuth.accessToken!,
-        }),
-      );
+  //     // final response = await http.post(
+  //     //   Uri.parse('$baseUrl/oauth2/authorization/google'),
+  //     //   body: jsonEncode(<String, String>{
+  //     //     'idToken': googleAuth.idToken!,
+  //     //     'accessToken': googleAuth.accessToken!,
+  //     //   }),
+  //     // );
+  //     final response = await http.get(
+  //       url,
+  //     );
 
-      if (response.statusCode == 200) {
-        accessHeaderValue = response.headers['access']!;
-        String uID = response.headers['uid']!;
-        log("/login api: accesstoken:${accessHeaderValue}");
-        log("/login api: uID:${uID}");
-        await _saveTokens(response.headers['set-cookie']!);
-        await _saveAccessToken(accessHeaderValue); // Access 토큰 저장
-        return int.parse(uID);
-      } else {
-        throw Exception('Failed to login with Google');
-      }
-    } catch (e) {
-      throw Exception('Failed to login with Google: $e');
-    }
-  }
+  //     log('social login status: ${response.statusCode}');
+  //     if (response.statusCode == 200) {
+  //       accessHeaderValue = response.headers['access']!;
+  //       String uID = response.headers['uid']!;
+  //       log("/login api: accesstoken:${accessHeaderValue}");
+  //       log("/login api: uID:${uID}");
+  //       await _saveTokens(response.headers['set-cookie']!);
+  //       // await _saveAccessToken(accessHeaderValue); // Access 토큰 저장
+  //       return int.parse(uID);
+  //     } else {
+  //       throw Exception('Failed to login with Google');
+  //     }
+  //   } catch (e) {
+  //     log('${e}');
+  //     throw Exception('Failed to login with Google: $e');
+  //   }
+  // }
 
   // 토큰 갱신
-  Future<void> reissueToken() async {
+  Future<int> reissueToken() async {
     final prefs = await SharedPreferences.getInstance();
     final refreshToken = prefs.getString('refresh');
+    final url = Uri.http(baseUrl, '/reissue');
 
     if (refreshToken == null) {
       throw Exception('Refresh token not found');
     }
 
     final response = await http.post(
-      Uri.parse('$baseUrl/reissue'),
+      url,
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json',
         HttpHeaders.cookieHeader: refreshToken,
       },
-      body: jsonEncode(<String, String>{
-        'refresh': refreshToken,
-      }),
     );
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      await _saveTokens(data['refresh']);
+    log('/reissue status: ${response.statusCode}');
+    if (response.statusCode == 200 && response.headers['access'] != null) {
+      log('/reissue status: ${response.headers['access']}');
+      accessHeaderValue = response.headers['access']!;
+      await _saveAccessToken(accessHeaderValue);
+      await _saveTokens(response.headers['set-cookie']!);
+      return 1;
     } else {
-      throw Exception('Failed to reissue token');
+      reissueToken();
+      return 1;
     }
   }
 
@@ -179,27 +194,27 @@ class ApiService {
     await prefs.setString('access', accessToken);
   }
 
-  // 인증된 요청
-  Future<http.Response> authenticatedRequest(String endpoint,
-      {Map<String, String>? headers, dynamic body}) async {
-    await _ensureAccessTokenInitialized();
+  // // 인증된 요청
+  // Future<http.Response> authenticatedRequest(String endpoint,
+  //     {Map<String, String>? headers, dynamic body}) async {
+  //   await _ensureAccessTokenInitialized();
 
-    headers ??= {};
-    headers['Authorization'] = 'Bearer $accessHeaderValue';
+  //   headers ??= {};
+  //   headers['Authorization'] = 'Bearer $accessHeaderValue';
 
-    final response = await http.post(
-      Uri.parse('$baseUrl/$endpoint'),
-      headers: headers,
-      body: body != null ? jsonEncode(body) : null,
-    );
+  //   final response = await http.post(
+  //     Uri.parse('$baseUrl/$endpoint'),
+  //     headers: headers,
+  //     body: body != null ? jsonEncode(body) : null,
+  //   );
 
-    if (response.statusCode == 401) {
-      await reissueToken();
-      return authenticatedRequest(endpoint, headers: headers, body: body);
-    }
+  //   if (response.statusCode == 401) {
+  //     await reissueToken();
+  //     return authenticatedRequest(endpoint, headers: headers, body: body);
+  //   }
 
-    return response;
-  }
+  //   return response;
+  // }
 
   // 사용자 정보 가져오기
   Future<UserModel> getUserInfo(int uid) async {
@@ -214,7 +229,14 @@ class ApiService {
       final Map<String, dynamic> responseData =
           jsonDecode(utf8.decode(response.bodyBytes));
       final UserModel userData = UserModel.fromJson(responseData);
+      log('/getUserInfo data: ${userData.allergic}');
       return userData;
+    } else if (response.statusCode == 401) {
+      int retoken = reissueToken() as int;
+      if (retoken == 1) {
+        Future.delayed(const Duration(milliseconds: 990));
+        await getUserInfo(uid);
+      }
     }
     throw Exception('Failed to load user information');
   }
@@ -227,6 +249,7 @@ class ApiService {
       url,
       headers: {'access': accessHeaderValue},
     );
+    log('${accessHeaderValue}');
     log("/getPrescList api: <${response.statusCode}>, <${response.body}>");
     if (response.statusCode == 200) {
       final resData = jsonDecode(response.body);
@@ -234,6 +257,12 @@ class ApiService {
       return prescData;
     } else if (response.statusCode == 404) {
       return await getPrescList(uid);
+    } else if (response.statusCode == 401) {
+      int retoken = reissueToken() as int;
+      if (retoken == 1) {
+        Future.delayed(const Duration(milliseconds: 990));
+        return await getPrescList(uid);
+      }
     }
     log("getPrescList api Error: ${response.statusCode}");
     throw Error();
@@ -252,6 +281,12 @@ class ApiService {
       final resData = jsonDecode(utf8.decode(response.bodyBytes));
       final prescData = PrescModel.fromJson(resData);
       return prescData;
+    } else if (response.statusCode == 401) {
+      int retoken = reissueToken() as int;
+      if (retoken == 1) {
+        Future.delayed(const Duration(milliseconds: 990));
+        await getPrescInfo(prescId);
+      }
     }
     log("getPrescInfo api Error: ${response.statusCode}");
     throw Error();
@@ -270,7 +305,7 @@ class ApiService {
     if (response.statusCode == 200) {
       try {
         log('decode try');
-        // Uint8List resData = base64Decode(response.body);\
+        // Uint8List resData = base64Decode(response.body);
         Uint8List resData = response.bodyBytes;
         log('/getimage api body: success');
         return resData;
@@ -278,6 +313,12 @@ class ApiService {
         log('Error decoding image: $e');
         return Uint8List(0);
       }
+    } else if (response.statusCode == 401) {
+      int retoken = reissueToken() as int;
+      if (retoken == 1) {
+        Future.delayed(const Duration(milliseconds: 990));
+      }
+      return Uint8List(0);
     } else {
       log("Failed to fetch image, status code: ${response.statusCode}");
       return Uint8List(0);
@@ -320,6 +361,12 @@ class ApiService {
         log("/upload reponse parsing error: $e");
         return -1;
       }
+    } else if (response.statusCode == 401) {
+      int retoken = reissueToken() as int;
+      if (retoken == 1) {
+        Future.delayed(const Duration(milliseconds: 990));
+      }
+      return -1;
     } else {
       return -1;
     }
@@ -337,6 +384,12 @@ class ApiService {
       if (response.statusCode == 200) {
         log("처방전이 성공적으로 삭제되었습니다.");
         return;
+      } else if (response.statusCode == 401) {
+        int retoken = reissueToken() as int;
+        if (retoken == 1) {
+          Future.delayed(const Duration(milliseconds: 990));
+        }
+        await deletePrescription(prescriptionId);
       } else {
         log("처방전 삭제에 실패했습니다. 상태 코드: ${response.statusCode}");
         throw Exception('처방전 삭제에 실패했습니다.');

@@ -132,7 +132,6 @@ class _BuildPrescWidget extends StatelessWidget {
               uid: uid,
               prescModel: prescModel,
               onDeleted: () {
-                log("poppopopopop-p");
                 Navigator.of(context).pop(context);
                 _refreshData();
               },
