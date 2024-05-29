@@ -3,12 +3,17 @@ import 'package:medicineapp/screens/home_screen.dart';
 import 'package:medicineapp/screens/signup_screen.dart';
 import 'package:medicineapp/widgets/text_field_set.dart';
 import 'package:medicineapp/services/api_services.dart';
+import 'package:medicineapp/widgets/prescription_widget.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final Function func;
 
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({
+    Key? key,
+    required this.func,
+  }) : super(key: key);
 
   // ApiService 인스턴스 생성
   final ApiService _apiService = ApiService();
@@ -80,7 +85,10 @@ class LoginScreen extends StatelessWidget {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HomeScreen(uid: uid),
+                              builder: (context) => HomeScreen(
+                                uid: uid,
+                                func: func,
+                              ),
                             ),
                           );
                         } else {
@@ -122,8 +130,10 @@ class LoginScreen extends StatelessWidget {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  HomeScreen(uid: 0), // 소셜 로그인 시 uid 처리 필요
+                              builder: (context) => HomeScreen(
+                                uid: 0,
+                                func: func,
+                              ), // 소셜 로그인 시 uid 처리 필요
                             ),
                           );
                         } catch (e) {

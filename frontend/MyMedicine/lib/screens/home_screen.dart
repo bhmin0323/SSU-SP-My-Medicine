@@ -10,10 +10,12 @@ import 'dart:developer' as developer;
 
 class HomeScreen extends StatelessWidget {
   final int uid;
+  final Function func;
 
   HomeScreen({
     Key? key,
     required this.uid,
+    required this.func,
   }) : super(key: key);
 
   final PersistentTabController _controller =
@@ -24,6 +26,7 @@ class HomeScreen extends StatelessWidget {
     PersistentNavBarNavigator.pushNewScreen(context,
         screen: HomeScreen(
           uid: uid,
+          func: func,
         ));
   }
 
@@ -33,6 +36,7 @@ class HomeScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => LoginScreen(
           key: UniqueKey(),
+          func: func,
         ),
       ),
     );

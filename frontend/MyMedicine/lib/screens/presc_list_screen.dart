@@ -77,7 +77,9 @@ class _PrescListScreenState extends State<PrescListScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
+                          builder: (context) => LoginScreen(
+                            func: widget.func,
+                          ),
                         ),
                       );
                     },
@@ -123,13 +125,15 @@ class _PrescListScreenState extends State<PrescListScreen> {
                         );
                       } else {
                         return ListView.builder(
-                          itemCount: snapshot.data![1].length,
+                          itemCount: snapshot.data![1].prescIdList.length,
                           itemBuilder: (context, index) {
+                            int prescIndex = index;
+                            log("presclist widget: ${snapshot.data![1].prescIdList[prescIndex]}");
                             return PrescWidget(
                               index: index,
                               uid: widget.uid,
-                              prescId: snapshot.data![1].prescIdList[
-                                  snapshot.data![1].length - index - 1],
+                              prescId:
+                                  snapshot.data![1].prescIdList[prescIndex],
                               onDeleted: fetchData,
                               func: widget.func,
                             );

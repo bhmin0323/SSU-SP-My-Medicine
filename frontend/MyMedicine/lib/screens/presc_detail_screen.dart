@@ -55,7 +55,6 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
 
   void _showWarningDialog(BuildContext context) {
     if (context == null || _isDeleting) return;
-    if (_isDeleting) return;
 
     String warningMessage = '';
     if (widget.prescModel.duplicateMed != null &&
@@ -121,7 +120,7 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
       _isDeleting = true;
     });
     try {
-      await _apiService.deletePrescription(prescriptionId);
+      // await _apiService.deletePrescription(prescriptionId);
       _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
           content: Text('처방전이 성공적으로 삭제되었습니다.'),
@@ -130,6 +129,15 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
       );
 
       widget.onDeleted();
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => HomeScreen(
+      //       uid: widget.uid,
+      //       func: widget.func,
+      //     ),
+      //   ),
+      // );
     } catch (e) {
       _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
