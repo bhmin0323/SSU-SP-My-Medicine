@@ -120,7 +120,7 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
       _isDeleting = true;
     });
     try {
-      // await _apiService.deletePrescription(prescriptionId);
+      await _apiService.deletePrescription(prescriptionId);
       _scaffoldMessengerState?.showSnackBar(
         const SnackBar(
           content: Text('처방전이 성공적으로 삭제되었습니다.'),
