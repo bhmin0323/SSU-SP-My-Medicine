@@ -59,6 +59,8 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
     String warningMessage = '';
     if (widget.prescModel.duplicateMed != null &&
         widget.prescModel.duplicateMed!.isNotEmpty) {
+      log("warning duplicated: ${widget.prescModel.duplicateMed}");
+      log("warning prescId: ${widget.prescModel.prescId}");
       warningMessage += '중복 복용 주의\n';
       warningMessage += '${widget.prescModel.duplicateMed!.join(', ')}\n';
       warningMessage += '이 성분명의 약품을 중복 복용할 위험이 있습니다\n';

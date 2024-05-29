@@ -62,7 +62,7 @@ class ApiService {
     log("${loginData}");
     log("/login: REQ: $url");
     log("/login: <${response.statusCode}>, <${response.headers}>");
-    if (response.statusCode == 200 || response.statusCode == 404) {
+    if (response.statusCode == 200) {
       accessHeaderValue = response.headers['access']!;
       String uID = response.headers['uid']!;
       log("/login api: accesstoken:${accessHeaderValue}");
@@ -105,7 +105,7 @@ class ApiService {
   }
 
   // 구글 로그인
-  Future<void> googleLogin() async {
+  Future<int> googleLogin() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -117,11 +117,6 @@ class ApiService {
 
       final response = await http.post(
         Uri.parse('$baseUrl/oauth2/authorization/google'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'access': '',
-          HttpHeaders.cookieHeader: '',
-        },
         body: jsonEncode(<String, String>{
           'idToken': googleAuth.idToken!,
           'accessToken': googleAuth.accessToken!,
@@ -129,8 +124,13 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        await _saveTokens(data['refresh']);
+        accessHeaderValue = response.headers['access']!;
+        String uID = response.headers['uid']!;
+        log("/login api: accesstoken:${accessHeaderValue}");
+        log("/login api: uID:${uID}");
+        await _saveTokens(response.headers['set-cookie']!);
+        await _saveAccessToken(accessHeaderValue); // Access 토큰 저장
+        return int.parse(uID);
       } else {
         throw Exception('Failed to login with Google');
       }
@@ -259,7 +259,7 @@ class ApiService {
 
   // 처방 사진 가져오기
   Future<Uint8List> getPrescPic(int prescId) async {
-    Future.delayed(const Duration(milliseconds: 990));
+    // Future.delayed(const Duration(milliseconds: 990));
     await _initializeAccessToken();
     final url = Uri.http(baseUrl, '/getPrescPic', {'pID': '$prescId'});
     final response = await http.get(

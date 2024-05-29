@@ -31,15 +31,15 @@ class HomeScreen extends StatelessWidget {
   }
 
   void pushExitScreen(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(
-          key: UniqueKey(),
-          func: func,
-        ),
-      ),
-    );
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => LoginScreen(
+    //       key: UniqueKey(),
+    //       func: func,
+    //     ),
+    //   ),
+    // );
   }
 
   void pushUploadScreen(BuildContext context) {
