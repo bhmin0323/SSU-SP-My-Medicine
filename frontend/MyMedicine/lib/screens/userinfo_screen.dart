@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medicineapp/screens/presc_list_screen.dart';
+import 'package:medicineapp/screens/signup_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
 import 'package:medicineapp/models/user_model.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -80,7 +81,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '알러지 정보:',
+                    '알러지 정보',
                     style: TextStyle(
                       fontSize: 20,
                     ),
@@ -90,11 +91,19 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: user.allergic.map((allergic) {
                       return Text(
-                        '${allergic.info}',
+                        '${allergic}',
                         style: TextStyle(fontSize: 16),
                       );
                     }).toList(),
                   ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      _showAllergiesDialog(context);
+                      saveInput();
+                      edit(context, user.uID, selectedAllergies);
+                    },
+                    child: Text('알러지 수정'),
+                  )
                 ],
               ),
             );
@@ -102,5 +111,36 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         },
       ),
     );
+  }
+
+  void edit(
+      BuildContext context, int uid, List<String> selectedAllergies) async {
+    await _apiService.edituser(uid, selectedAllergies);
+  }
+
+  void _showAllergiesDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AllergySelectionDialog(
+          allAllergies: allAllergies,
+          selectedAllergies: selectedAllergies,
+          onSelectionChanged: (selection) {
+            setState(() {
+              selectedAllergies = selection;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  TextEditingController otherAllergyController = TextEditingController();
+
+  void saveInput() {
+    String? otherAllergy = otherAllergyController.text;
+    if (otherAllergy != null && otherAllergy.isNotEmpty) {
+      selectedAllergies.add(otherAllergy);
+    }
   }
 }

@@ -4,7 +4,6 @@ import 'package:medicineapp/screens/signup_screen.dart';
 import 'package:medicineapp/widgets/text_field_set.dart';
 import 'package:medicineapp/services/api_services.dart';
 // import 'package:medicineapp/widgets/prescription_widget.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();

@@ -18,7 +18,7 @@
 // }
 class UserModel {
   final int uID;
-  final List<AllergicInfo> allergic;
+  final List<String> allergic;
 
   UserModel({
     required this.uID,
@@ -27,14 +27,13 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     // Parse the allergic data
-    List<dynamic> allergicData = json['allergic'] ?? [];
-    List<AllergicInfo> allergicList = allergicData
-        .map((e) => AllergicInfo.fromJson(e))
-        .toList(); // Map each item to AllergicInfo object
+    List<String> allergicData;
+    allergicData =
+        List<String>.from(json['allergic'].map((item) => item['info']));
 
     return UserModel(
       uID: json['uID'] ?? "",
-      allergic: allergicList,
+      allergic: allergicData,
     );
   }
 }

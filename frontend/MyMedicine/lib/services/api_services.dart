@@ -95,7 +95,7 @@ class ApiService {
       body: jsonEncode(<String, dynamic>{
         'username': username,
         'password': password,
-        'allergies': allergies,
+        'allergicList': allergies,
       }),
     );
     log('/signup status: ${response.statusCode}');
@@ -108,8 +108,23 @@ class ApiService {
       return -1;
     }
   }
+
   //알러지 정보 수정
-  // Future<void> edituser(AllergicInfo)
+  Future<void> edituser(int username, List<String> allergies) async {
+    final url = Uri.http(baseUrl, '/editUser');
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'allergicList': allergies,
+        'uid': username,
+      }),
+    );
+    log('/edituser: ${response.statusCode}, ${response.body}');
+    getUserInfo(username);
+  }
 
   // 구글 로그인
   // Future<int> googleLogin() async {
@@ -182,13 +197,13 @@ class ApiService {
     }
   }
 
-// 토큰 저장
+  // 토큰 저장
   Future<void> _saveTokens(String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('refresh', refreshToken);
   }
 
-// 액세스 토큰 저장
+  // 액세스 토큰 저장
   Future<void> _saveAccessToken(String accessToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('access', accessToken);
@@ -224,7 +239,7 @@ class ApiService {
       url,
       headers: {'access': accessHeaderValue},
     );
-    log("/getUserInfo api: <${response.statusCode}>, <${response.body}>");
+    log("/getUserInfo api: <${response.statusCode}>,  <${utf8.decode(response.bodyBytes)}>");
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData =
           jsonDecode(utf8.decode(response.bodyBytes));
