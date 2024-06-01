@@ -123,7 +123,6 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
       return;
     }
 
-    // Combine year, month, and date into a single string
     String prescriptionDate =
         "${_regYearController.text}-${_regMonthController.text.padLeft(2, '0')}-${_regDateController.text.padLeft(2, '0')}";
 
@@ -195,18 +194,23 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
       appBar: AppBar(
         title: Container(
           padding: const EdgeInsets.only(
-            bottom: 1,
+            left: 12,
+            right: 0,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('처방전 업로드'),
-              const SizedBox(width: 30, height: 1),
+              Text(
+                "처방전 업로드",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
         ),
-        backgroundColor: Colors.white,
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple[200],
         elevation: 5,
         shadowColor: Colors.grey[300],
       ),
@@ -226,108 +230,113 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today_outlined,
-                          color: Colors.grey[900],
-                          size: 25,
-                        ),
-                        const SizedBox(width: 8, height: 1),
-                        const Text(
-                          "처방일자: ",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            color: Colors.grey[900],
+                            size: 25,
                           ),
-                        ),
-                        Container(
-                          width: 50,
-                          height: 30,
-                          alignment: Alignment.bottomCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextField(
-                            controller: _regYearController,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.bottom,
-                            maxLines: 1,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              hintText: 'YYYY',
-                              hintStyle: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[400],
-                              ),
-                              contentPadding: const EdgeInsets.only(bottom: 4),
+                          const SizedBox(width: 8, height: 1),
+                          const Text(
+                            "처방일자: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                        const Text(
-                          "-",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          alignment: Alignment.bottomCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextField(
-                            controller: _regMonthController,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.bottom,
-                            maxLines: 1,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              hintText: 'MM',
-                              hintStyle: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[400],
+                          Container(
+                            width: 50,
+                            height: 30,
+                            alignment: Alignment.bottomCenter,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextField(
+                              controller: _regYearController,
+                              textAlign: TextAlign.center,
+                              textAlignVertical: TextAlignVertical.bottom,
+                              maxLines: 1,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText: 'YYYY',
+                                hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[400],
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.only(bottom: 4),
                               ),
-                              contentPadding: const EdgeInsets.only(bottom: 4),
                             ),
                           ),
-                        ),
-                        const Text(
-                          "-",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          alignment: Alignment.bottomCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextField(
-                            controller: _regDateController,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.bottom,
-                            maxLines: 1,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              hintText: 'DD',
-                              hintStyle: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[400],
-                              ),
-                              contentPadding: const EdgeInsets.only(bottom: 4),
+                          const Text(
+                            "-",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            width: 30,
+                            height: 30,
+                            alignment: Alignment.bottomCenter,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextField(
+                              controller: _regMonthController,
+                              textAlign: TextAlign.center,
+                              textAlignVertical: TextAlignVertical.bottom,
+                              maxLines: 1,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText: 'MM',
+                                hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[400],
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.only(bottom: 4),
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            "-",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Container(
+                            width: 30,
+                            height: 30,
+                            alignment: Alignment.bottomCenter,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextField(
+                              controller: _regDateController,
+                              textAlign: TextAlign.center,
+                              textAlignVertical: TextAlignVertical.bottom,
+                              maxLines: 1,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText: 'DD',
+                                hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[400],
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.only(bottom: 4),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Row(
                       children: [

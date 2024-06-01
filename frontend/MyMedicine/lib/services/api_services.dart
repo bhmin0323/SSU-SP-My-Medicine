@@ -51,7 +51,10 @@ class ApiService {
   }
 
 // 로그인
-  Future<int> login(String loginId, String password) async {
+  Future<int> login(
+    String loginId,
+    String password,
+  ) async {
     final url = Uri.http(baseUrl, '/login');
     final Map<String, dynamic> loginData = {
       "username": loginId,
@@ -85,7 +88,15 @@ class ApiService {
 
   // 회원가입
   Future<int> signUp(
-      String username, String password, List<String> allergies) async {
+    String username,
+    String password,
+    List<String> allergies,
+    String name,
+    String birthDate,
+    String gender,
+    double height,
+    double weight,
+  ) async {
     final url = Uri.http(baseUrl, '/signup');
     final response = await http.post(
       url,
@@ -96,10 +107,15 @@ class ApiService {
         'username': username,
         'password': password,
         'allergicList': allergies,
+        'nickname': name,
+        'birthDate': birthDate,
+        'gender': gender,
+        'height': height,
+        'weight': weight
       }),
     );
-    log('/signup status: ${response.statusCode}');
-    log('/signup request body: ${allergies}');
+    log('/signup status: ${response.statusCode} ${response.body}');
+    log('/signup request body:${username}, ${password}, ${allergies}, ${name},${birthDate},${gender},${height},${weight}');
     if (response.statusCode == 200) {
       return 200;
     } else if (response.statusCode == 409) {
@@ -107,23 +123,6 @@ class ApiService {
     } else {
       return -1;
     }
-  }
-
-  //알러지 정보 수정
-  Future<void> edituser(int username, List<String> allergies) async {
-    final url = Uri.http(baseUrl, '/editUser');
-    final response = await http.put(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(<String, dynamic>{
-        'allergicList': allergies,
-        'uid': username,
-      }),
-    );
-    log('/edituser: ${response.statusCode}, ${response.body}');
-    getUserInfo(username);
   }
 
   // 구글 로그인
@@ -254,6 +253,39 @@ class ApiService {
       }
     }
     throw Exception('Failed to load user information');
+  }
+
+  //알러지 정보 수정
+  Future<int> edituser(
+    int username,
+    List<String> allergies,
+    String name,
+    String birthDate,
+    String gender,
+    double height,
+    double weight,
+  ) async {
+    final url = Uri.http(baseUrl, '/editUser');
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'access': accessHeaderValue,
+      },
+      body: jsonEncode(<String, dynamic>{
+        'uid': username,
+        'allergicList': allergies,
+        'nickname': name,
+        'birthDate': birthDate,
+        'gender': gender,
+        'height': height,
+        'weight': weight,
+      }),
+    );
+    log('/edituser request: ${allergies}, ${birthDate}');
+    log('/edituser response: ${response.statusCode}, ${response.body}');
+    getUserInfo(username);
+    return response.statusCode;
   }
 
   // 처방 목록 가져오기

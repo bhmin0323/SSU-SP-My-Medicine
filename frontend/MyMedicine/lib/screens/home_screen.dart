@@ -31,15 +31,15 @@ class HomeScreen extends StatelessWidget {
   }
 
   void pushExitScreen(BuildContext context) {
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => LoginScreen(
-    //       key: UniqueKey(),
-    //       func: func,
-    //     ),
-    //   ),
-    // );
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(
+          func: func,
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   void pushUploadScreen(BuildContext context) {
@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
       builder: (context) {
         return PrescListScreen(
           uid: uid,
-          func: pushExitScreen,
+          func: func,
         );
       },
     ));
@@ -59,7 +59,7 @@ class HomeScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => UserInfoScreen(
           uid: uid,
-          func: pushExitScreen,
+          func: func,
         ),
       ),
     );
@@ -139,50 +139,36 @@ List<PersistentBottomNavBarItem> _navBarsItems(
       activeColorSecondary: Colors.white,
       inactiveColorPrimary: Colors.grey,
       inactiveColorSecondary: Colors.grey,
-      // onPressed: (context) {
-      //   developer.log("Context value: $context");
-      //   Navigator.push(
-      //     context!,
-      //     MaterialPageRoute(
-      //       builder: (context) => PrescUploadScreen(
-      //         uid: uid,
-      //         func: pushUploadScreen,
-      //       ),
-      //     ),
-      //   );
-      // },
+      onPressed: (context) {
+        developer.log("Context value: $context");
+        Navigator.push(
+          context!,
+          MaterialPageRoute(
+            builder: (context) => PrescUploadScreen(
+              uid: uid,
+              func: pushUploadScreen,
+            ),
+          ),
+        );
+      },
     ),
-    // PersistentBottomNavBarItem(
-    //   icon: const Icon(Icons.add),
-    //   title: ("Add"),
-    //   activeColorPrimary: Colors.deepPurple[200]!,
-    //   activeColorSecondary: Colors.white,
-    //   inactiveColorPrimary: Colors.grey,
-    //   inactiveColorSecondary: Colors.grey,
-    // ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.account_circle),
       title: ("My Page"),
       activeColorPrimary: Colors.deepPurple[200]!,
       inactiveColorPrimary: Colors.grey,
-      // onPressed: (context) {
-      //   developer.log("Context value: $context");
-      //   Navigator.push(
-      //     context!,
-      //     MaterialPageRoute(
-      //       builder: (context) => UserInfoScreen(
-      //         uid: uid,
-      //         func: pushUserInfoScreen,
-      //       ),
-      //     ),
-      //   );
-      // },
+      onPressed: (context) {
+        developer.log("Context value: $context");
+        Navigator.push(
+          context!,
+          MaterialPageRoute(
+            builder: (context) => UserInfoScreen(
+              uid: uid,
+              func: pushUserInfoScreen,
+            ),
+          ),
+        );
+      },
     ),
-    // PersistentBottomNavBarItem(
-    //   icon: const Icon(Icons.account_circle),
-    //   title: ("My Page"),
-    //   activeColorPrimary: Colors.deepPurple[200]!,
-    //   inactiveColorPrimary: Colors.grey,
-    // ),
   ];
 }

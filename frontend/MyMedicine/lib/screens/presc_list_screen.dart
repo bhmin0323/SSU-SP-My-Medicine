@@ -74,14 +74,15 @@ class _PrescListScreenState extends State<PrescListScreen> {
                       color: Colors.white, size: 32),
                   IconButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(
-                            func: widget.func,
-                          ),
-                        ),
-                      );
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => LoginScreen(
+                      //       func: widget.func,
+                      //     ),
+                      //   ),
+                      // );
+                      widget.func(context);
                     },
                     icon: const Icon(Icons.home, color: Colors.white, size: 32),
                   ),
