@@ -43,7 +43,7 @@ class AllergicInfo {
     return AllergicInfo(
       aID: json['aID'] ?? 0,
       name: json['nickname'] ?? "",
-      birthDate: json['birthDate'] ?? "0000-00-00",
+      birthDate: json['birthDate'] ?? "0001-01-01",
       gender: json['gender'] ?? "-",
       height: json['height'] ?? 0.0,
       weight: json['weight'] ?? 0.0,
@@ -80,7 +80,7 @@ class UserModel {
     return UserModel(
       uID: json['uID'] ?? 0,
       name: json['nickname'] ?? "홍길동",
-      birthDate: json['birthDate'] ?? "0000-00-00",
+      birthDate: json['birthDate'] ?? "0001-01-01",
       gender: json['gender'] ?? "-",
       height: json['height'] ?? 0.0,
       weight: json['weight'] ?? 0.0,

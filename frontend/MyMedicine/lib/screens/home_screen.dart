@@ -11,6 +11,8 @@ import 'dart:developer' as developer;
 class HomeScreen extends StatelessWidget {
   final int uid;
   final Function func;
+  final GlobalKey<NavigatorState> _homeNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   HomeScreen({
     Key? key,
@@ -31,8 +33,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   void pushExitScreen(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
+    developer.log("Exit");
+    _homeNavigatorKey.currentState?.pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (context) => LoginScreen(
           func: func,
@@ -67,38 +69,46 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      controller: _controller,
-      screens: _buildScreens(
-        uid,
-        pushExitScreen,
-        pushUploadScreen,
-        pushUserInfoScreen,
-      ),
-      items: _navBarsItems(uid, pushUploadScreen, pushUserInfoScreen),
-      confineInSafeArea: true,
-      backgroundColor: Colors.white,
-      handleAndroidBackButtonPress: true,
-      resizeToAvoidBottomInset: true,
-      stateManagement: true,
-      hideNavigationBarWhenKeyboardShows: true,
-      decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        colorBehindNavBar: Colors.white,
-      ),
-      popAllScreensOnTapOfSelectedTab: true,
-      popActionScreens: PopActionScreensType.all,
-      itemAnimationProperties: const ItemAnimationProperties(
-        duration: Duration(milliseconds: 200),
-        curve: Curves.ease,
-      ),
-      screenTransitionAnimation: const ScreenTransitionAnimation(
-        animateTabTransition: true,
-        curve: Curves.ease,
-        duration: Duration(milliseconds: 200),
-      ),
-      navBarStyle: NavBarStyle.style15,
+    return Navigator(
+      key: _homeNavigatorKey,
+      onGenerateRoute: (routeSettings) {
+        return MaterialPageRoute(
+          settings: routeSettings,
+          builder: (context) => PersistentTabView(
+            context,
+            controller: _controller,
+            screens: _buildScreens(
+              uid,
+              pushExitScreen,
+              pushUploadScreen,
+              pushUserInfoScreen,
+            ),
+            items: _navBarsItems(uid, pushUploadScreen, pushUserInfoScreen),
+            confineInSafeArea: true,
+            backgroundColor: Colors.white,
+            handleAndroidBackButtonPress: true,
+            resizeToAvoidBottomInset: true,
+            stateManagement: true,
+            hideNavigationBarWhenKeyboardShows: true,
+            decoration: NavBarDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              colorBehindNavBar: Colors.white,
+            ),
+            popAllScreensOnTapOfSelectedTab: true,
+            popActionScreens: PopActionScreensType.all,
+            itemAnimationProperties: const ItemAnimationProperties(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.ease,
+            ),
+            screenTransitionAnimation: const ScreenTransitionAnimation(
+              animateTabTransition: true,
+              curve: Curves.ease,
+              duration: Duration(milliseconds: 200),
+            ),
+            navBarStyle: NavBarStyle.style15,
+          ),
+        );
+      },
     );
   }
 }

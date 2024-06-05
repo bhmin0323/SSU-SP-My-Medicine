@@ -236,7 +236,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                           Icon(
                             Icons.calendar_today_outlined,
                             color: Colors.grey[900],
-                            size: 25,
+                            size: 20,
                           ),
                           const SizedBox(width: 8, height: 1),
                           const Text(
@@ -247,7 +247,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                             ),
                           ),
                           Container(
-                            width: 50,
+                            width: 30,
                             height: 30,
                             alignment: Alignment.bottomCenter,
                             decoration: BoxDecoration(
@@ -264,6 +264,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                                 hintText: 'YYYY',
                                 hintStyle: TextStyle(
                                   fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                   color: Colors.grey[400],
                                 ),
                                 contentPadding:
@@ -279,7 +280,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                             ),
                           ),
                           Container(
-                            width: 30,
+                            width: 25,
                             height: 30,
                             alignment: Alignment.bottomCenter,
                             decoration: BoxDecoration(
@@ -297,6 +298,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                                 hintStyle: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.grey[400],
+                                  fontSize: 12,
                                 ),
                                 contentPadding:
                                     const EdgeInsets.only(bottom: 4),
@@ -311,7 +313,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                             ),
                           ),
                           Container(
-                            width: 30,
+                            width: 25,
                             height: 30,
                             alignment: Alignment.bottomCenter,
                             decoration: BoxDecoration(
@@ -328,6 +330,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                                 hintText: 'DD',
                                 hintStyle: TextStyle(
                                   fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                   color: Colors.grey[400],
                                 ),
                                 contentPadding:
@@ -343,7 +346,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                         Icon(
                           Icons.access_alarm_outlined,
                           color: Colors.grey[900],
-                          size: 25,
+                          size: 20,
                         ),
                         const SizedBox(width: 8, height: 1),
                         const Text(
@@ -354,7 +357,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                           ),
                         ),
                         Container(
-                          width: 30,
+                          width: 25,
                           height: 30,
                           alignment: Alignment.bottomCenter,
                           decoration: BoxDecoration(
@@ -371,6 +374,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
                               hintText: '7',
                               hintStyle: TextStyle(
                                 fontWeight: FontWeight.w500,
+                                fontSize: 12,
                                 color: Colors.grey[400],
                               ),
                               contentPadding: const EdgeInsets.only(bottom: 4),
@@ -557,7 +561,7 @@ class MedInfoTile extends StatelessWidget {
       horizontalTitleGap: 0,
       minLeadingWidth: 0,
       leading: Container(
-        width: 40,
+        width: 10,
         height: 40,
         margin: const EdgeInsets.only(right: 25),
         decoration: BoxDecoration(
@@ -576,6 +580,7 @@ class MedInfoTile extends StatelessWidget {
         ),
       ),
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             width: 220,
