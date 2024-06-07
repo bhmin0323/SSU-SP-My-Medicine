@@ -70,8 +70,8 @@ class _PrescListScreenState extends State<PrescListScreen> {
                     icon: const Icon(Icons.refresh,
                         color: Colors.white, size: 32),
                   ),
-                  const Icon(Icons.notifications,
-                      color: Colors.white, size: 32),
+                  // const Icon(Icons.notifications,
+                  //     color: Colors.white, size: 32),
                   IconButton(
                     onPressed: () {
                       // Navigator.pushReplacement(
@@ -82,9 +82,34 @@ class _PrescListScreenState extends State<PrescListScreen> {
                       //     ),
                       //   ),
                       // );
-                      widget.func(context);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("로그아웃"),
+                            content: const Text("로그아웃 하시겠습니까?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("취소"),
+                              ),
+                              //처방건 삭제
+                              TextButton(
+                                onPressed: () {
+                                  widget.func(context);
+                                  Navigator.of(context).pop(context);
+                                },
+                                child: const Text("확인"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
-                    icon: const Icon(Icons.home, color: Colors.white, size: 32),
+                    icon:
+                        const Icon(Icons.logout, color: Colors.white, size: 31),
                   ),
                 ],
               ),

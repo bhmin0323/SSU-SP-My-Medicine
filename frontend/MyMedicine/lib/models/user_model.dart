@@ -79,7 +79,7 @@ class UserModel {
 
     return UserModel(
       uID: json['uID'] ?? 0,
-      name: json['nickname'] ?? "홍길동",
+      name: json['nickname'] ?? "",
       birthDate: json['birthDate'] ?? "0001-01-01",
       gender: json['gender'] ?? "-",
       height: json['height'] ?? 0.0,

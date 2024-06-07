@@ -44,15 +44,26 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // void pushUploadScreen(BuildContext context) {
+  //   Navigator.of(context).push(MaterialPageRoute(
+  //     builder: (context) {
+  //       return PrescListScreen(
+  //         uid: uid,
+  //         func: func,
+  //       );
+  //     },
+  //   ));
+  // }
   void pushUploadScreen(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) {
-        return PrescListScreen(
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PrescListScreen(
           uid: uid,
           func: func,
-        );
-      },
-    ));
+        ),
+      ),
+    );
   }
 
   void pushUserInfoScreen(BuildContext context) {
@@ -69,46 +80,76 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      key: _homeNavigatorKey,
-      onGenerateRoute: (routeSettings) {
-        return MaterialPageRoute(
-          settings: routeSettings,
-          builder: (context) => PersistentTabView(
-            context,
-            controller: _controller,
-            screens: _buildScreens(
-              uid,
-              pushExitScreen,
-              pushUploadScreen,
-              pushUserInfoScreen,
-            ),
-            items: _navBarsItems(uid, pushUploadScreen, pushUserInfoScreen),
-            confineInSafeArea: true,
-            backgroundColor: Colors.white,
-            handleAndroidBackButtonPress: true,
-            resizeToAvoidBottomInset: true,
-            stateManagement: true,
-            hideNavigationBarWhenKeyboardShows: true,
-            decoration: NavBarDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              colorBehindNavBar: Colors.white,
-            ),
-            popAllScreensOnTapOfSelectedTab: true,
-            popActionScreens: PopActionScreensType.all,
-            itemAnimationProperties: const ItemAnimationProperties(
-              duration: Duration(milliseconds: 200),
-              curve: Curves.ease,
-            ),
-            screenTransitionAnimation: const ScreenTransitionAnimation(
-              animateTabTransition: true,
-              curve: Curves.ease,
-              duration: Duration(milliseconds: 200),
-            ),
-            navBarStyle: NavBarStyle.style15,
-          ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("앱 종료"),
+              content: Text("앱을 종료하시겠습니까?"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text("취소"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    Navigator.of(context).maybePop();
+                  },
+                  child: Text("종료"),
+                ),
+              ],
+            );
+          },
         );
       },
+      child: Navigator(
+        key: _homeNavigatorKey,
+        onGenerateRoute: (routeSettings) {
+          return MaterialPageRoute(
+            settings: routeSettings,
+            builder: (context) => PersistentTabView(
+              context,
+              controller: _controller,
+              screens: _buildScreens(
+                uid,
+                pushExitScreen,
+                pushUploadScreen,
+                pushUserInfoScreen,
+              ),
+              items: _navBarsItems(uid, pushUploadScreen, pushUserInfoScreen),
+              confineInSafeArea: true,
+              backgroundColor: Colors.white,
+              handleAndroidBackButtonPress: true,
+              resizeToAvoidBottomInset: true,
+              stateManagement: true,
+              hideNavigationBarWhenKeyboardShows: true,
+              decoration: NavBarDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                colorBehindNavBar: Colors.white,
+              ),
+              popAllScreensOnTapOfSelectedTab: true,
+              popActionScreens: PopActionScreensType.all,
+              itemAnimationProperties: const ItemAnimationProperties(
+                duration: Duration(milliseconds: 200),
+                curve: Curves.ease,
+              ),
+              screenTransitionAnimation: const ScreenTransitionAnimation(
+                animateTabTransition: true,
+                curve: Curves.ease,
+                duration: Duration(milliseconds: 200),
+              ),
+              navBarStyle: NavBarStyle.style15,
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -149,36 +190,36 @@ List<PersistentBottomNavBarItem> _navBarsItems(
       activeColorSecondary: Colors.white,
       inactiveColorPrimary: Colors.grey,
       inactiveColorSecondary: Colors.grey,
-      onPressed: (context) {
-        developer.log("Context value: $context");
-        Navigator.push(
-          context!,
-          MaterialPageRoute(
-            builder: (context) => PrescUploadScreen(
-              uid: uid,
-              func: pushUploadScreen,
-            ),
-          ),
-        );
-      },
+      // onPressed: (context) {
+      //   developer.log("Context value: $context");
+      //   Navigator.push(
+      //     context!,
+      //     MaterialPageRoute(
+      //       builder: (context) => PrescUploadScreen(
+      //         uid: uid,
+      //         func: pushUploadScreen,
+      //       ),
+      //     ),
+      //   );
+      // },
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.account_circle),
       title: ("My Page"),
       activeColorPrimary: Colors.deepPurple[200]!,
       inactiveColorPrimary: Colors.grey,
-      onPressed: (context) {
-        developer.log("Context value: $context");
-        Navigator.push(
-          context!,
-          MaterialPageRoute(
-            builder: (context) => UserInfoScreen(
-              uid: uid,
-              func: pushUserInfoScreen,
-            ),
-          ),
-        );
-      },
+      // onPressed: (context) {
+      //   developer.log("Context value: $context");
+      //   Navigator.push(
+      //     context!,
+      //     MaterialPageRoute(
+      //       builder: (context) => UserInfoScreen(
+      //         uid: uid,
+      //         func: pushUserInfoScreen,
+      //       ),
+      //     ),
+      //   );
+      // },
     ),
   ];
 }

@@ -32,6 +32,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     "페니실린계 항생제",
     "세팔로스포린계 항생제",
     "퀴놀론계 항생제",
+    "비스테로이드성 소염진통제",
     "집먼지진드기",
     "계란",
     "우유",
@@ -250,7 +251,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('개인정보 입력'),
+          title: Text('회원정보 입력'),
           content: SingleChildScrollView(
             // Wrap with SingleChildScrollView
             child: Container(

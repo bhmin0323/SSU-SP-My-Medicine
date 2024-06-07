@@ -10,6 +10,7 @@ import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
 import 'package:medicineapp/widgets/toast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:medicineapp/screens/home_screen.dart';
 
 class PrescUploadScreen extends StatefulWidget {
   final int uid;
@@ -138,20 +139,22 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
 
     if (uploadResult != -1) {
       showToast("처방전이 등록되었습니다.");
-      widget.func(context);
-      _clearInputs();
       //홈화면으로 나가기
-      // await Future.delayed(const Duration(seconds: 1));
-      // Navigator.of(context).pop(context);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => PrescListScreen(
-      //       uid: widget.uid,
-      //       func: widget.func,
-      //     ),
-      //   ),
-      // );
+      if (context.findAncestorWidgetOfExactType<HomeScreen>() != null) {
+        final homeScreen = context.findAncestorWidgetOfExactType<HomeScreen>()!;
+        homeScreen.setIndex(0, context);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(
+              uid: widget.uid,
+              func: widget.func,
+            ),
+          ),
+          (route) => false,
+        );
+      }
+      _clearInputs();
     } else {
       showToast("처방전 등록에 실패했습니다.");
     }
