@@ -9,6 +9,7 @@ import 'package:medicineapp/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:io';
+import 'package:cp949_codec/cp949_codec.dart';
 
 class ApiService {
   static const String baseUrl = '43.200.168.39:8080';
@@ -323,9 +324,9 @@ class ApiService {
       url,
       headers: {'access': accessHeaderValue},
     );
-    log("/getPrescInfo api: <${response.statusCode}>, <${utf8.decode(response.bodyBytes)}>");
+    log("/getPrescInfo api: <${response.statusCode}>, <${/*cp949*/ utf8.decode(response.bodyBytes)}>");
     if (response.statusCode == 200) {
-      final resData = jsonDecode(utf8.decode(response.bodyBytes));
+      final resData = jsonDecode(/*cp949*/ utf8.decode(response.bodyBytes));
       final prescData = PrescModel.fromJson(resData);
       return prescData;
     } else if (response.statusCode == 401) {

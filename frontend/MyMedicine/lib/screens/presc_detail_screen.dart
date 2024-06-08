@@ -61,14 +61,14 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
         widget.prescModel.duplicateMed!.isNotEmpty) {
       log("warning duplicated: ${widget.prescModel.duplicateMed}");
       log("warning prescId: ${widget.prescModel.prescId}");
-      warningMessage += '중복 복용 주의\n';
+      warningMessage += '/중복 복용 경고/\n';
       warningMessage += '${widget.prescModel.duplicateMed!.join(', ')}\n';
       warningMessage += '이 성분명의 약품을 중복 복용할 위험이 있습니다\n';
     }
     if (widget.prescModel.allergicMed != null &&
         widget.prescModel.allergicMed!.isNotEmpty) {
       warningMessage +=
-          '알러지 주의\n ${widget.prescModel.allergicMed!.join(', ')} \n 이 성분명의 약품은 알러지 위험이 있는 약품입니다';
+          '/알러지 경고/\n ${widget.prescModel.allergicMed!.join(', ')} \n 이 성분명의 약품은 알러지 반응 위험이 있는 약품입니다';
     }
     if (warningMessage.isNotEmpty) {
       showModalBottomSheet(
@@ -373,16 +373,21 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.warning_amber_rounded,
-                                          color: Color(0xffe66452), size: 26),
+                                          color:
+                                              Color.fromARGB(255, 222, 211, 0),
+                                          size: 26),
                                       Text(
                                         " 주의 ",
                                         style: TextStyle(
                                           fontSize: 26,
-                                          color: Color(0xffe66452),
+                                          color:
+                                              Color.fromARGB(255, 222, 211, 0),
                                         ),
                                       ),
                                       Icon(Icons.warning_amber_rounded,
-                                          color: Color(0xffe66452), size: 26),
+                                          color:
+                                              Color.fromARGB(255, 222, 211, 0),
+                                          size: 26),
                                     ],
                                   ),
                                   Column(

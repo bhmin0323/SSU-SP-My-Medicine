@@ -95,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     "페니실린계 항생제",
     "세팔로스포린계 항생제",
     "퀴놀론계 항생제",
-    "비스테로이드성 소염진통제",
+    "소염진통제",
     "집먼지진드기",
     "계란",
     "우유",

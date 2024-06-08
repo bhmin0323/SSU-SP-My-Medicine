@@ -145,9 +145,9 @@ class _PrescListScreenState extends State<PrescListScreen> {
                       log("presc_list_screen: ${snapshot.data![1].toString()}");
                       log("presc_list_screen: ${snapshot.data![1].prescIdList.toString()}");
                       if (snapshot.data![1] == null ||
-                          snapshot.data![1].prescIdList[0] == null) {
+                          snapshot.data![1]!.prescIdList == null) {
                         return const Center(
-                          child: Text('No data'),
+                          child: Text('처방전 정보가 없습니다.'),
                         );
                       } else {
                         return ListView.builder(
