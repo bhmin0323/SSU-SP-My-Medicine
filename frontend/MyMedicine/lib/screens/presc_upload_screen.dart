@@ -34,7 +34,8 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
   final _regYearController = TextEditingController();
   final _regMonthController = TextEditingController();
   final _regDateController = TextEditingController();
-
+  final GlobalKey<NavigatorState> _homeNavigatorKey =
+      GlobalKey<NavigatorState>();
   XFile? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -155,8 +156,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
       //   // );
       // Navigator.pop(context);
       // }
-      Navigator.push(
-        context!,
+      _homeNavigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (context) => PrescListScreen(
             uid: widget.uid,

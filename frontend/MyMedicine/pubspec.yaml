@@ -48,6 +48,7 @@ dependencies:
   google_sign_in: ^5.0.0
   webview_flutter: ^2.0.13
   cp949_codec: ^1.0.2
+  provider: ^6.1.2
   
 dev_dependencies:
   flutter_test:

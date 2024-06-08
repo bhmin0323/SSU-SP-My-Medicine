@@ -6,6 +6,7 @@ import 'package:medicineapp/models/prescription_model.dart';
 import 'package:medicineapp/screens/home_screen.dart';
 import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
+import 'package:medicineapp/widgets/toast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class PrescDetailScreen extends StatefulWidget {
@@ -31,6 +32,8 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
   bool _hasShownWarning = false;
   bool _isDeleting = false;
   ScaffoldMessengerState? _scaffoldMessengerState;
+  final GlobalKey<NavigatorState> _homeNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -122,14 +125,14 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
       _isDeleting = true;
     });
     try {
-      await _apiService.deletePrescription(prescriptionId);
-      _scaffoldMessengerState?.showSnackBar(
-        const SnackBar(
-          content: Text('처방전이 성공적으로 삭제되었습니다.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-
+      // await _apiService.deletePrescription(prescriptionId);
+      // _scaffoldMessengerState?.showSnackBar(
+      //   const SnackBar(
+      //     content: Text('처방전이 성공적으로 삭제되었습니다.'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
+      showToast("처방전이 성공적으로 삭제되었습니다.");
       widget.onDeleted();
       // Navigator.pushReplacement(
       //   context,
@@ -140,13 +143,23 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
       //     ),
       //   ),
       // );
-    } catch (e) {
-      _scaffoldMessengerState?.showSnackBar(
-        const SnackBar(
-          content: Text('처방전 삭제 중 오류가 발생했습니다.'),
-          duration: Duration(seconds: 2),
+
+      _homeNavigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+            uid: widget.uid,
+            func: widget.func,
+          ),
         ),
       );
+    } catch (e) {
+      // _scaffoldMessengerState?.showSnackBar(
+      //   const SnackBar(
+      //     content: Text('처방전 삭제 중 오류가 발생했습니다.'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
+      showToast("처방전 삭제 중 오류가 발생했습니다.");
     } finally {
       setState(() {
         _isDeleting = false;
@@ -163,6 +176,7 @@ class _PrescDetailScreenState extends State<PrescDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _homeNavigatorKey,
       appBar: AppBar(
         title: Container(
           padding: const EdgeInsets.only(bottom: 1),

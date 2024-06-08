@@ -101,7 +101,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               child: Column(
                 children: [
                   Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -109,6 +109,18 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           style: TextStyle(
                             fontSize: 20,
                           ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            _showPersonalInfoDialog(context);
+                            saveInput();
+                          },
+                          child: Icon(Icons.edit,
+                              color: Color.fromARGB(255, 129, 0, 141),
+                              size: 25),
                         ),
                       ]),
                   const Divider(),
@@ -132,6 +144,17 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                     ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        _showAllergiesDialog(context);
+                        saveInput();
+                      },
+                      child: Icon(Icons.edit,
+                          color: Color.fromARGB(255, 129, 0, 141), size: 25),
+                    ),
                   ]),
                   SizedBox(height: 10),
                   Row(children: [
@@ -149,45 +172,45 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     ),
                   ]),
                   const Divider(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              _showAllergiesDialog(context);
-                              saveInput();
-                            },
-                            child: Text('알러지 재선택'),
-                          ),
-                          SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              _showPersonalInfoDialog(context);
-                            },
-                            child: Text('회원정보 재입력'),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () async {
-                          edit(
-                              context,
-                              user.uID,
-                              selectedAllergies,
-                              user.name,
-                              user.birthDate,
-                              user.gender,
-                              user.height,
-                              user.weight);
-                        },
-                        child: Text('정보수정'),
-                      ),
-                    ],
-                  ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     ElevatedButton(
+                  //       onPressed: () {
+                  //         _showAllergiesDialog(context);
+                  //         saveInput();
+                  //       },
+                  //       child: Text('알러지 재선택'),
+                  //     ),
+                  //     SizedBox(width: 10),
+                  //     ElevatedButton(
+                  //       onPressed: () {
+                  //         _showPersonalInfoDialog(context);
+                  //       },
+                  //       child: Text('회원정보 재입력'),
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: 10),
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     edit(
+                  //         context,
+                  //         user.uID,
+                  //         selectedAllergies,
+                  //         user.name,
+                  //         user.birthDate,
+                  //         user.gender,
+                  //         user.height,
+                  //         user.weight);
+                  //   },
+                  //   child: Text('정보수정'),
+                  // ),
+                  // ],
+                  // ),
                 ],
               ),
             );
@@ -240,6 +263,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             setState(() {
               selectedAllergies = selection;
             });
+          },
+          editCallback: () {
+            edit(context, widget.uid, selectedAllergies, '', '', '', 0, 0);
           },
         );
       },
@@ -340,6 +366,16 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             ),
             ElevatedButton(
               onPressed: () {
+                edit(
+                  context,
+                  widget.uid,
+                  selectedAllergies,
+                  nameController.text,
+                  birthDateController.text,
+                  genderController.text,
+                  double.tryParse(heightController.text) ?? 0,
+                  double.tryParse(weightController.text) ?? 0,
+                );
                 Navigator.of(context).pop();
               },
               child: Text('확인'),
@@ -381,11 +417,13 @@ class AllergySelectionDialog extends StatefulWidget {
   final List<String> allAllergies;
   final List<String> selectedAllergies;
   final ValueChanged<List<String>> onSelectionChanged;
+  final Function editCallback;
 
   AllergySelectionDialog({
     required this.allAllergies,
     required this.selectedAllergies,
     required this.onSelectionChanged,
+    required this.editCallback,
   });
 
   @override
@@ -440,6 +478,7 @@ class _AllergySelectionDialogState extends State<AllergySelectionDialog> {
         ElevatedButton(
           onPressed: () {
             widget.onSelectionChanged(_tempSelectedAllergies);
+            widget.editCallback();
             Navigator.of(context).pop();
           },
           child: Text('확인'),
