@@ -190,36 +190,36 @@ List<PersistentBottomNavBarItem> _navBarsItems(
       activeColorSecondary: Colors.white,
       inactiveColorPrimary: Colors.grey,
       inactiveColorSecondary: Colors.grey,
-      // onPressed: (context) {
-      //   developer.log("Context value: $context");
-      //   Navigator.push(
-      //     context!,
-      //     MaterialPageRoute(
-      //       builder: (context) => PrescUploadScreen(
-      //         uid: uid,
-      //         func: pushUploadScreen,
-      //       ),
-      //     ),
-      //   );
-      // },
+      onPressed: (context) {
+        developer.log("Context value: $context");
+        Navigator.push(
+          context!,
+          MaterialPageRoute(
+            builder: (context) => PrescUploadScreen(
+              uid: uid,
+              func: pushUploadScreen,
+            ),
+          ),
+        );
+      },
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.account_circle),
       title: ("My Page"),
       activeColorPrimary: Colors.deepPurple[200]!,
       inactiveColorPrimary: Colors.grey,
-      // onPressed: (context) {
-      //   developer.log("Context value: $context");
-      //   Navigator.push(
-      //     context!,
-      //     MaterialPageRoute(
-      //       builder: (context) => UserInfoScreen(
-      //         uid: uid,
-      //         func: pushUserInfoScreen,
-      //       ),
-      //     ),
-      //   );
-      // },
+      onPressed: (context) {
+        developer.log("Context value: $context");
+        Navigator.push(
+          context!,
+          MaterialPageRoute(
+            builder: (context) => UserInfoScreen(
+              uid: uid,
+              func: pushUserInfoScreen,
+            ),
+          ),
+        );
+      },
     ),
   ];
 }

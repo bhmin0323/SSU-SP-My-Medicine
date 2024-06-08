@@ -140,20 +140,30 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
     if (uploadResult != -1) {
       showToast("처방전이 등록되었습니다.");
       //홈화면으로 나가기
-      if (context.findAncestorWidgetOfExactType<HomeScreen>() != null) {
-        final homeScreen = context.findAncestorWidgetOfExactType<HomeScreen>()!;
-        homeScreen.setIndex(0, context);
-      } else {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              uid: widget.uid,
-              func: widget.func,
-            ),
+      // if (context.findAncestorWidgetOfExactType<HomeScreen>() != null) {
+      //   final homeScreen = context.findAncestorWidgetOfExactType<HomeScreen>()!;
+      //   homeScreen.setIndex(0, context);
+      // } else {
+      //   // Navigator.of(context).pushAndRemoveUntil(
+      //   //   MaterialPageRoute(
+      //   //     builder: (context) => HomeScreen(
+      //   //       uid: widget.uid,
+      //   //       func: widget.func,
+      //   //     ),
+      //   //   ),
+      //   //   (route) => false,
+      //   // );
+      // Navigator.pop(context);
+      // }
+      Navigator.push(
+        context!,
+        MaterialPageRoute(
+          builder: (context) => PrescListScreen(
+            uid: widget.uid,
+            func: widget.func,
           ),
-          (route) => false,
-        );
-      }
+        ),
+      );
       _clearInputs();
     } else {
       showToast("처방전 등록에 실패했습니다.");
