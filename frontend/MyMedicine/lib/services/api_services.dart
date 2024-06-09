@@ -209,28 +209,6 @@ class ApiService {
     await prefs.setString('access', accessToken);
   }
 
-  // // 인증된 요청
-  // Future<http.Response> authenticatedRequest(String endpoint,
-  //     {Map<String, String>? headers, dynamic body}) async {
-  //   await _ensureAccessTokenInitialized();
-
-  //   headers ??= {};
-  //   headers['Authorization'] = 'Bearer $accessHeaderValue';
-
-  //   final response = await http.post(
-  //     Uri.parse('$baseUrl/$endpoint'),
-  //     headers: headers,
-  //     body: body != null ? jsonEncode(body) : null,
-  //   );
-
-  //   if (response.statusCode == 401) {
-  //     await reissueToken();
-  //     return authenticatedRequest(endpoint, headers: headers, body: body);
-  //   }
-
-  //   return response;
-  // }
-
   // 사용자 정보 가져오기
   Future<UserModel> getUserInfo(int uid) async {
     await _ensureAccessTokenInitialized();
@@ -285,7 +263,7 @@ class ApiService {
     );
     log('/edituser request: ${allergies}, ${birthDate}');
     log('/edituser response: ${response.statusCode}, ${response.body}');
-    getUserInfo(username);
+    // getUserInfo(username);
     return response.statusCode;
   }
 
@@ -325,6 +303,7 @@ class ApiService {
       headers: {'access': accessHeaderValue},
     );
     log("/getPrescInfo api: <${response.statusCode}>, <${/*cp949*/ utf8.decode(response.bodyBytes)}>");
+
     if (response.statusCode == 200) {
       final resData = jsonDecode(/*cp949*/ utf8.decode(response.bodyBytes));
       final prescData = PrescModel.fromJson(resData);
@@ -335,9 +314,11 @@ class ApiService {
         Future.delayed(const Duration(milliseconds: 990));
         await getPrescInfo(prescId);
       }
+    } else if (response.statusCode == 404) {
+      await getPrescInfo(prescId);
     }
     log("getPrescInfo api Error: ${response.statusCode}");
-    throw Error();
+    return PrescModel.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   // 처방 사진 가져오기

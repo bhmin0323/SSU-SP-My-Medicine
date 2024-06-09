@@ -44,6 +44,9 @@ class _PrescListScreenState extends State<PrescListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      fetchData();
+    });
     return Scaffold(
       backgroundColor: const Color(0xfff2f2fe),
       appBar: AppBar(

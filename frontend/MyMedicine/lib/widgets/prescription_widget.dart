@@ -113,12 +113,12 @@ class _BuildPrescWidget extends StatelessWidget {
     required this.func,
   });
 
-  void _refreshData() {
-    // 이전 페이지로 돌아간 후 새로고침
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (BuildContext context) => PrescListScreen(uid: uid, func: func),
-    ));
-  }
+  // void _refreshData() {
+  //   // 이전 페이지로 돌아간 후 새로고침
+  //   Navigator.of(context).pushReplacement(MaterialPageRoute(
+  //     builder: (BuildContext context) => PrescListScreen(uid: uid, func: func),
+  //   ));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +133,12 @@ class _BuildPrescWidget extends StatelessWidget {
               prescModel: prescModel,
               onDeleted: () {
                 Navigator.of(context).pop(context);
-                _refreshData();
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //   builder: (BuildContext context) =>
+                //       PrescListScreen(uid: uid, func: func),
+                // ));
+                // _refreshData();
+                onDeleted();
               },
               func: func,
             ),
@@ -181,7 +186,8 @@ class _BuildPrescWidget extends StatelessWidget {
                     ],
                   ),
                   FutureBuilder(
-                    future: ApiService().getPrescPic(prescId),
+                    // future: ApiService().getPrescPic(prescId),
+                    future: _getEditedImage(prescId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
@@ -238,5 +244,16 @@ class _BuildPrescWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<Uint8List?> _getEditedImage(int prescId) async {
+    // Define the delay duration (e.g., 1 second)
+    const delayDuration = Duration(milliseconds: 300);
+
+    // Wait for the delay duration before fetching the image
+    await Future.delayed(delayDuration);
+
+    // Fetch the image from the server
+    return await ApiService().getPrescPic(prescId);
   }
 }

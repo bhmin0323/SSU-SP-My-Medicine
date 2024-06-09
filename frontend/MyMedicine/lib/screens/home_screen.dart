@@ -24,12 +24,16 @@ class HomeScreen extends StatelessWidget {
       PersistentTabController(initialIndex: 0);
 
   void setIndex(int index, BuildContext context) {
-    _controller.index = index;
-    PersistentNavBarNavigator.pushNewScreen(context,
-        screen: HomeScreen(
+    developer.log("newscreen");
+    _homeNavigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
           uid: uid,
           func: func,
-        ));
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   void pushExitScreen(BuildContext context) {
@@ -55,10 +59,11 @@ class HomeScreen extends StatelessWidget {
   //   ));
   // }
   void pushUploadScreen(BuildContext context) {
+    developer.log("uploadscreen");
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PrescListScreen(
+        builder: (context) => PrescUploadScreen(
           uid: uid,
           func: func,
         ),
@@ -67,6 +72,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   void pushUserInfoScreen(BuildContext context) {
+    developer.log("infoscreen");
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -123,7 +129,8 @@ class HomeScreen extends StatelessWidget {
                 pushUploadScreen,
                 pushUserInfoScreen,
               ),
-              items: _navBarsItems(uid, pushUploadScreen, pushUserInfoScreen),
+              items: _navBarsItems(
+                  context, uid, pushUploadScreen, pushUserInfoScreen),
               confineInSafeArea: true,
               backgroundColor: Colors.white,
               handleAndroidBackButtonPress: true,
@@ -174,8 +181,8 @@ List<Widget> _buildScreens(int uid, Function pushExitScreen,
   ];
 }
 
-List<PersistentBottomNavBarItem> _navBarsItems(
-    int uid, Function pushUploadScreen, Function pushUserInfoScreen) {
+List<PersistentBottomNavBarItem> _navBarsItems(BuildContext context, int uid,
+    Function pushUploadScreen, Function pushUserInfoScreen) {
   return [
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.home),
@@ -190,36 +197,38 @@ List<PersistentBottomNavBarItem> _navBarsItems(
       activeColorSecondary: Colors.white,
       inactiveColorPrimary: Colors.grey,
       inactiveColorSecondary: Colors.grey,
-      onPressed: (context) {
-        developer.log("Context value: $context");
-        Navigator.push(
-          context!,
-          MaterialPageRoute(
-            builder: (context) => PrescUploadScreen(
-              uid: uid,
-              func: pushUploadScreen,
-            ),
-          ),
-        );
-      },
+      // onPressed: (context) {
+      //   developer.log("Context value: $context");
+
+      //   Navigator.push(
+      //     context!,
+      //     MaterialPageRoute(
+      //       builder: (context) => PrescUploadScreen(
+      //         uid: uid,
+      //         func: pushUploadScreen,
+      //       ),
+      //     ),
+      //   );
+      // },
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.account_circle),
       title: ("My Page"),
       activeColorPrimary: Colors.deepPurple[200]!,
       inactiveColorPrimary: Colors.grey,
-      onPressed: (context) {
-        developer.log("Context value: $context");
-        Navigator.push(
-          context!,
-          MaterialPageRoute(
-            builder: (context) => UserInfoScreen(
-              uid: uid,
-              func: pushUserInfoScreen,
-            ),
-          ),
-        );
-      },
+      // onPressed: (context) {
+      //   developer.log("Context value: $context");
+
+      //   Navigator.push(
+      //     context!,
+      //     MaterialPageRoute(
+      //       builder: (context) => UserInfoScreen(
+      //         uid: uid,
+      //         func: pushUserInfoScreen,
+      //       ),
+      //     ),
+      //   );
+      // },
     ),
   ];
 }

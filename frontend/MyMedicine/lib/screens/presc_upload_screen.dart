@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,8 +34,7 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
   final _regYearController = TextEditingController();
   final _regMonthController = TextEditingController();
   final _regDateController = TextEditingController();
-  final GlobalKey<NavigatorState> _homeNavigatorKey =
-      GlobalKey<NavigatorState>();
+
   XFile? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -141,29 +140,13 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
     if (uploadResult != -1) {
       showToast("처방전이 등록되었습니다.");
       //홈화면으로 나가기
-      // if (context.findAncestorWidgetOfExactType<HomeScreen>() != null) {
-      //   final homeScreen = context.findAncestorWidgetOfExactType<HomeScreen>()!;
-      //   homeScreen.setIndex(0, context);
-      // } else {
-      //   // Navigator.of(context).pushAndRemoveUntil(
-      //   //   MaterialPageRoute(
-      //   //     builder: (context) => HomeScreen(
-      //   //       uid: widget.uid,
-      //   //       func: widget.func,
-      //   //     ),
-      //   //   ),
-      //   //   (route) => false,
-      //   // );
-      // Navigator.pop(context);
-      // }
-      _homeNavigatorKey.currentState?.push(
-        MaterialPageRoute(
-          builder: (context) => PrescListScreen(
-            uid: widget.uid,
-            func: widget.func,
-          ),
-        ),
-      );
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final homeScreen = context.findAncestorWidgetOfExactType<HomeScreen>();
+        if (homeScreen != null) {
+          homeScreen.setIndex(0, context);
+        }
+      });
       _clearInputs();
     } else {
       showToast("처방전 등록에 실패했습니다.");
@@ -181,9 +164,31 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
     });
   }
 
+  Future<Uint8List> _resizeAndCompressImage(Uint8List imageBytes) async {
+    // 이미지 디코딩
+    img.Image? image = img.decodeImage(imageBytes);
+    if (image == null) return imageBytes;
+
+    // 이미지 크기 조정 (예: 최대 너비 800픽셀, 높이는 비율 유지)
+    int maxWidth = 500;
+    int newWidth = maxWidth;
+    int newHeight = (maxWidth / image.width * image.height).round();
+    img.Image resizedImage =
+        img.copyResize(image, width: newWidth, height: newHeight);
+
+    // 이미지 압축 (품질: 0-100, 100이 가장 높은 품질)
+    int compressionQuality = 50;
+    List<int> compressedBytes =
+        img.encodeJpg(resizedImage, quality: compressionQuality);
+
+    return Uint8List.fromList(compressedBytes);
+  }
+
   Future<int> _uploadPresc(int uid, String prescriptionDate, int duration,
       String medList, XFile img) async {
     final imgBytes = await img.readAsBytes();
+
+    final resizedImgBytes = await _resizeAndCompressImage(imgBytes);
 
     // API 호출을 위한 매개변수 설정
     final String formattedDate = prescriptionDate;

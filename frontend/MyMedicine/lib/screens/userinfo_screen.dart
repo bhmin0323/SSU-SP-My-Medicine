@@ -3,6 +3,7 @@ import 'package:medicineapp/screens/presc_list_screen.dart';
 // import 'package:medicineapp/screens/signup_screen.dart';
 import 'package:medicineapp/services/api_services.dart';
 import 'package:medicineapp/models/user_model.dart';
+import 'package:medicineapp/widgets/toast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class UserInfoScreen extends StatefulWidget {
@@ -48,9 +49,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   }
 
   Future<void> _refreshUserInfo() async {
-    setState(() {
-      _userInfoFuture = _apiService.getUserInfo(widget.uid);
-    });
+    _userInfoFuture = _apiService.getUserInfo(widget.uid);
+    setState(() {});
   }
 
   @override
@@ -115,7 +115,16 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         ),
                         InkWell(
                           onTap: () {
-                            _showPersonalInfoDialog(context);
+                            _showPersonalInfoDialog(
+                              context,
+                              user.uID,
+                              user.allergic,
+                              user.name,
+                              user.birthDate,
+                              user.gender,
+                              user.height,
+                              user.weight,
+                            );
                             saveInput();
                           },
                           child: Icon(Icons.edit,
@@ -149,7 +158,16 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        _showAllergiesDialog(context);
+                        _showAllergiesDialog(
+                          context,
+                          user.uID,
+                          user.allergic,
+                          user.name,
+                          user.birthDate,
+                          user.gender,
+                          user.height,
+                          user.weight,
+                        );
                         saveInput();
                       },
                       child: Icon(Icons.edit,
@@ -222,14 +240,15 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   //정보수정
   void edit(
-      BuildContext context,
-      int uid,
-      List<String> selectedAllergies,
-      String uname,
-      String ubirthDate,
-      String ugender,
-      double uheight,
-      double uweight) async {
+    BuildContext context,
+    int uid,
+    List<String> userAllergic,
+    String uname,
+    String ubirthDate,
+    String ugender,
+    double uheight,
+    double uweight,
+  ) async {
     String name = nameController.text.isEmpty ? uname : nameController.text;
     String birthDate = birthDateController.text.isEmpty
         ? ubirthDate
@@ -242,17 +261,35 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     double weight = weightController.text.isEmpty
         ? uweight
         : double.parse(weightController.text);
-    int status = await _apiService.edituser(
-        uid, selectedAllergies, name, birthDate, gender, height, weight);
-    if (status == 200) {
-      SnackBar(content: Text("회원정보가 수정되었습니다."));
+    int status;
+    if (selectedAllergies.isEmpty) {
+      status = await _apiService.edituser(
+          uid, userAllergic, name, birthDate, gender, height, weight);
     } else {
-      SnackBar(content: Text("정보 수정에 실패하였습니다."));
+      status = await _apiService.edituser(
+          uid, selectedAllergies, name, birthDate, gender, height, weight);
     }
-    _refreshUserInfo();
+    if (status == 200) {
+      showToast("회원정보가 수정되었습니다.");
+    } else {
+      showToast("정보 수정에 실패하였습니다.");
+    }
+    if (mounted) {
+      // setState(() {});
+      _refreshUserInfo();
+    }
   }
 
-  void _showAllergiesDialog(BuildContext context) {
+  void _showAllergiesDialog(
+    BuildContext context,
+    int uid,
+    List<String> userAllergic,
+    String name,
+    String birthDate,
+    String gender,
+    double height,
+    double weight,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -260,19 +297,39 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           allAllergies: allAllergies,
           selectedAllergies: selectedAllergies,
           onSelectionChanged: (selection) {
-            setState(() {
-              selectedAllergies = selection;
-            });
+            if (mounted) {
+              setState(() {
+                selectedAllergies = selection;
+              });
+            }
           },
           editCallback: () {
-            edit(context, widget.uid, selectedAllergies, '', '', '', 0, 0);
+            edit(
+              context,
+              uid,
+              userAllergic,
+              name,
+              birthDate,
+              gender,
+              height,
+              weight,
+            );
           },
         );
       },
     );
   }
 
-  void _showPersonalInfoDialog(BuildContext context) {
+  void _showPersonalInfoDialog(
+    BuildContext context,
+    int uid,
+    List<String> userAllergic,
+    String name,
+    String birthDate,
+    String gender,
+    double height,
+    double weight,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -323,9 +380,11 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       );
                     }).toList(),
                     onChanged: (String? value) {
-                      setState(() {
-                        genderController.text = value ?? '';
-                      });
+                      if (mounted) {
+                        setState(() {
+                          genderController.text = value ?? '';
+                        });
+                      }
                     },
                     decoration: InputDecoration(
                       labelText: '성별',
@@ -368,13 +427,13 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               onPressed: () {
                 edit(
                   context,
-                  widget.uid,
-                  selectedAllergies,
-                  nameController.text,
-                  birthDateController.text,
-                  genderController.text,
-                  double.tryParse(heightController.text) ?? 0,
-                  double.tryParse(weightController.text) ?? 0,
+                  uid,
+                  userAllergic,
+                  name,
+                  birthDate,
+                  gender,
+                  height,
+                  weight,
                 );
                 Navigator.of(context).pop();
               },
@@ -393,7 +452,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
         String month =
             picked.month < 10 ? '0${picked.month}' : '${picked.month}';
