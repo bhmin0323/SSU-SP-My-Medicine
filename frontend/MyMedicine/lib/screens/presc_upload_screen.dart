@@ -37,12 +37,23 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
 
   XFile? _image;
   final ImagePicker _picker = ImagePicker();
+  void _handleSubmitted(String value, int fieldIndex) {
+    // 입력된 값을 처리하는 로직 추가 가능
+    if (fieldIndex < _controllers.length - 1) {
+      FocusScope.of(context).requestFocus(_focusNodes[fieldIndex + 1]);
+    } else {
+      FocusScope.of(context).unfocus();
+    }
+  }
+
+  final List<FocusNode> _focusNodes = [];
 
   @override
   void initState() {
     super.initState();
     for (int i = 0; i < 3; i++) {
       _controllers.add(TextEditingController());
+      _focusNodes.add(FocusNode());
     }
   }
 
@@ -110,7 +121,12 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
         _regDateController.text.isEmpty ||
         !isInteger(_regYearController.text) ||
         !isInteger(_regMonthController.text) ||
-        !isInteger(_regDateController.text)) {
+        !isInteger(_regDateController.text) ||
+        _regYearController.text.length != 4 ||
+        _regMonthController.text.length > 2 ||
+        _regDateController.text.length > 2 ||
+        int.parse(_regMonthController.text) > 12 ||
+        int.parse(_regDateController.text) > 31) {
       showToast("처방일자를 올바르게 입력해주세요");
       return;
     }
@@ -164,31 +180,9 @@ class _PrescUploadScreenState extends State<PrescUploadScreen> {
     });
   }
 
-  Future<Uint8List> _resizeAndCompressImage(Uint8List imageBytes) async {
-    // 이미지 디코딩
-    img.Image? image = img.decodeImage(imageBytes);
-    if (image == null) return imageBytes;
-
-    // 이미지 크기 조정 (예: 최대 너비 800픽셀, 높이는 비율 유지)
-    int maxWidth = 500;
-    int newWidth = maxWidth;
-    int newHeight = (maxWidth / image.width * image.height).round();
-    img.Image resizedImage =
-        img.copyResize(image, width: newWidth, height: newHeight);
-
-    // 이미지 압축 (품질: 0-100, 100이 가장 높은 품질)
-    int compressionQuality = 50;
-    List<int> compressedBytes =
-        img.encodeJpg(resizedImage, quality: compressionQuality);
-
-    return Uint8List.fromList(compressedBytes);
-  }
-
   Future<int> _uploadPresc(int uid, String prescriptionDate, int duration,
       String medList, XFile img) async {
     final imgBytes = await img.readAsBytes();
-
-    final resizedImgBytes = await _resizeAndCompressImage(imgBytes);
 
     // API 호출을 위한 매개변수 설정
     final String formattedDate = prescriptionDate;
