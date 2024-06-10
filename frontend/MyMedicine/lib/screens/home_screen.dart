@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medicineapp/screens/login_screen.dart';
 import 'package:medicineapp/screens/presc_list_screen.dart';
 import 'package:medicineapp/screens/presc_upload_screen.dart';
@@ -105,8 +106,9 @@ class HomeScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(true);
-                    Navigator.of(context).maybePop();
+                    // Navigator.of(context).pop(true);
+                    // Navigator.of(context).maybePop();
+                    SystemNavigator.pop();
                   },
                   child: Text("종료"),
                 ),
